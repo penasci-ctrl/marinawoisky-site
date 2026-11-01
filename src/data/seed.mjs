@@ -92,7 +92,7 @@ export const docs = [
   { _id: 'pub-dasartes', _type: 'publication', category: 'press', year: 2022, outlet: 'Dasartes', title: L('Julia Gallo e Marina Woisky | Galeria Metrópole') },
 
   // ---------------------------------------------------------------- Textos
-  { _id: 'text-future-greats', _type: 'essay', kind: 'about', author: 'Oliver Basciano', year: 2025, title: L('Future Greats 2025'), context: L('ArtReview'), body: { pt: [p('[Texto completo — colar aqui.]')] } },
+  { _id: 'essay-future-greats', _type: 'essay', kind: 'about', author: 'Oliver Basciano', year: 2025, title: L('Future Greats 2025'), context: L('ArtReview'), body: { pt: [p('[Texto completo — colar aqui.]')] } },
 
   // ---------------------------------------------------------------- Sobre
   {
