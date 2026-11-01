@@ -15,7 +15,7 @@ const pair = (name, title, type, extra = {}, components) =>
     ],
   })
 
-export const localeString = pair('localeString', 'Texto curto', 'string')
+export const localeString = pair('localeString', 'Texto curto', 'string', {}, { input: LocaleInput })
 export const localeText = pair('localeText', 'Texto', 'text', { rows: 3 }, { input: LocaleInput })
 
 // Texto longo com parágrafos, itálico e links (bio, textos, texto de exposição)
