@@ -1,7 +1,7 @@
 import { defineType, defineField } from 'sanity'
 
 export const text = defineType({
-  name: 'text',
+  name: 'essay',
   title: 'Texto',
   type: 'document',
   fields: [

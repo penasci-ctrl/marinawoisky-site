@@ -25,7 +25,7 @@ const QUERY = `{
   "publications": *[_type == "publication"] | order(year desc, _createdAt desc) {
     "id": _id, title, category, outlet, year, link, "pdf": pdf.asset->url, "images": images[] ${IMG}
   },
-  "texts": *[_type == "text"] | order(year desc, _createdAt desc) {
+  "texts": *[_type == "essay"] | order(year desc, _createdAt desc) {
     "id": _id, title, kind, author, year, context, body, link
   },
   "about": *[_id == "about"][0] {
@@ -67,7 +67,7 @@ function fromSeed() {
       works: of('artwork').filter((w) => (w.exhibitions || []).some((r) => r._ref === d._id)).map((w) => ({ slug: s(w), title: w.title, year: w.year })),
     }));
   const publications = of('publication').sort((a, b) => b.year - a.year).map((d) => ({ id: d._id, title: d.title, category: d.category, outlet: d.outlet, year: d.year, link: d.link, images: ims(d.images) }));
-  const texts = of('text').sort((a, b) => b.year - a.year).map((d) => ({ id: d._id, title: d.title, kind: d.kind, author: d.author, year: d.year, context: d.context, body: d.body, link: d.link }));
+  const texts = of('essay').sort((a, b) => b.year - a.year).map((d) => ({ id: d._id, title: d.title, kind: d.kind, author: d.author, year: d.year, context: d.context, body: d.body, link: d.link }));
   const a = byId.about;
   const st = byId.settings;
   return {
