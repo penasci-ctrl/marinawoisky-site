@@ -36,8 +36,8 @@ const tiles = works.filter((w) => w.images?.length);
         return (
           <a class="tile" href={href(lang, `/obras/${w.slug}`)} style={`--r:${ratio(cover)}`} data-ratio={ratio(cover)}>
             <span class="ph">
-              <img src={imgUrl(cover, 1200)} srcset={srcset(cover)} sizes="(max-width: 800px) 100vw, 50vw" alt={cover.alt || `${title}, ${w.year} — Marina Woisky`} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" width={cover.w} height={cover.h} />
-              {hover && <img class="alt" src={imgUrl(hover, 1200)} srcset={srcset(hover)} sizes="50vw" alt="" loading="lazy" decoding="async" />}
+              <img src={imgUrl(cover, 1200)} srcset={srcset(cover)} sizes="(max-width: 800px) 90vw, 46vw" alt={cover.alt || `${title}, ${w.year} — Marina Woisky`} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" width={cover.w} height={cover.h} />
+              {hover && <img class="alt" src={imgUrl(hover, 1200)} srcset={srcset(hover)} sizes="(max-width: 800px) 90vw, 46vw" alt="" loading="lazy" decoding="async" />}
             </span>
             <span class="cap">
               <span class="yr">{w.year}</span>
@@ -74,7 +74,7 @@ const tiles = works.filter((w) => w.images?.length);
       // Transição 3D → vitrine: a escultura "mergulha" na tela (cresce, gira, desfoca e some)
       // enquanto as obras sobem por um degradê, sem linha dura.
       const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      let ticking = false;
+      let ticking = false, lastKey = '';
       const onScroll = () => {
         if (ticking) return;
         ticking = true;
@@ -82,11 +82,20 @@ const tiles = works.filter((w) => w.images?.length);
           ticking = false;
           const y = scrollY, h = innerHeight;
           const p = Math.min(1, Math.max(0, y / h));
-          const ease = p * p * (3 - 2 * p);
-          opener.style.opacity = String(Math.max(0, 1 - Math.max(0, (p - 0.25) / 0.75) ** 1.4));
-          if (!still) {
-            opener.style.transform = `scale(${1 + ease * 2.4}) rotate(${ease * -14}deg)`;
-            opener.style.filter = p > 0.02 ? `blur(${(ease * 12).toFixed(1)}px)` : "none";
+          // passou da abertura: esconde a camada do 3D de vez (nada de desfoque sendo composto atrás da vitrine)
+          const gone = p >= 1;
+          const key = gone ? 'gone' : p.toFixed(3);
+          if (key === lastKey) return;
+          lastKey = key;
+          opener.style.visibility = gone ? 'hidden' : 'visible';
+          opener.classList.toggle('is-moving', !gone && p > 0);
+          if (!gone) {
+            const ease = p * p * (3 - 2 * p);
+            opener.style.opacity = String(Math.max(0, 1 - Math.max(0, (p - 0.25) / 0.75) ** 1.4));
+            if (!still) {
+              opener.style.transform = p > 0 ? `scale(${1 + ease * 2.4}) rotate(${ease * -14}deg)` : '';
+              opener.style.filter = p > 0.02 ? `blur(${(ease * 12).toFixed(1)}px)` : '';
+            }
           }
           if (caption) caption.style.opacity = y > 40 ? '0' : '1';
           document.body.classList.toggle('is-intro', y < h * 0.4);
