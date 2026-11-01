@@ -36,27 +36,48 @@ export default {
   },
 };
 
+const SYSTEM_TR =
+  'You are a professional art-world translator. Translate every item from Brazilian Portuguese into fluent English for a contemporary artist\'s website. ' +
+  'The output must be entirely in English: no Portuguese words may remain, except proper names (people, venues, galleries, cities) and artwork or exhibition titles written in quotes. ' +
+  'Glossary: "argamassa" = "cement"; "exposição individual" = "solo exhibition"; "exposição coletiva" = "group exhibition"; "impressão" = "print"; "tecido" = "fabric". ' +
+  'Keep numbers, units and punctuation. Input: a JSON array of strings. Output: ONLY a JSON array of strings, same length, same order, nothing else.';
+const EXAMPLE_IN = ['Impressão sobre tecido, argamassa pigmentada e ferro', 'Exposição coletiva com curadoria de Ana Paula Lopes', 'Vive e trabalha em São Paulo.'];
+const EXAMPLE_OUT = ['Print on fabric, pigmented cement and iron', 'Group exhibition curated by Ana Paula Lopes', 'Lives and works in São Paulo.'];
+
 async function translate(env, texts) {
   if (!Array.isArray(texts) || !texts.length) return [];
   if (texts.length > 200 || JSON.stringify(texts).length > 40000) throw new Error('Texto longo demais para uma vez só.');
-  const out = await env.AI.run(TEXT_MODEL, {
-    messages: [
-      {
-        role: 'system',
-        content:
-          'You translate Brazilian Portuguese into natural, elegant English for a contemporary artist\'s website (art-world register). ' +
-          'Translate "argamassa" as "cement". Keep proper names, exhibition titles in quotes, venue names and numbers as they are. ' +
-          'Keep leading/trailing spaces of each item. You receive a JSON array of strings; reply ONLY with a JSON array of the same length, same order.',
-      },
-      { role: 'user', content: JSON.stringify(texts) },
-    ],
-    max_tokens: 8000,
-    temperature: 0.2,
-  });
-  const raw = typeof out.response === 'string' ? out.response : JSON.stringify(out.response);
-  const arr = JSON.parse(raw.slice(raw.indexOf('['), raw.lastIndexOf(']') + 1));
-  if (!Array.isArray(arr) || arr.length !== texts.length) throw new Error('A tradução voltou incompleta. Tente de novo.');
-  return arr.map(String);
+  // trechos vazios ou só espaço não vão para o modelo
+  const idx = texts.map((t, i) => (String(t).trim() ? i : -1)).filter((i) => i >= 0);
+  const result = texts.map(String);
+  if (!idx.length) return result;
+  const src = idx.map((i) => texts[i]);
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const out = await env.AI.run(TEXT_MODEL, {
+      messages: [
+        { role: 'system', content: SYSTEM_TR },
+        { role: 'user', content: JSON.stringify(EXAMPLE_IN) },
+        { role: 'assistant', content: JSON.stringify(EXAMPLE_OUT) },
+        { role: 'user', content: JSON.stringify(src) },
+      ],
+      max_tokens: 8000,
+      temperature: 0,
+    });
+    const raw = typeof out.response === 'string' ? out.response : JSON.stringify(out.response);
+    let arr;
+    try { arr = JSON.parse(raw.slice(raw.indexOf('['), raw.lastIndexOf(']') + 1)); } catch { continue; }
+    if (!Array.isArray(arr) || arr.length !== src.length) continue;
+    // se algum trecho com várias palavras voltou igual ao original, tenta de novo
+    const untouched = arr.some((t, k) => String(t).trim() === src[k].trim() && src[k].trim().split(/\s+/).length > 2);
+    if (untouched && attempt === 0) continue;
+    idx.forEach((i, k) => {
+      // preserva espaços no começo/fim (importante entre trechos em itálico e normais)
+      const lead = texts[i].match(/^\s*/)[0], trail = texts[i].match(/\s*$/)[0];
+      result[i] = lead + String(arr[k]).trim() + trail;
+    });
+    return result;
+  }
+  throw new Error('A tradução falhou. Tente de novo em alguns segundos.');
 }
 
 async function describe(env, src) {
