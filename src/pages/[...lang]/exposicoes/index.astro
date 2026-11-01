@@ -35,7 +35,7 @@ const { exhibitions } = await getContent();
           <a class="row exh-row row-hover" href={href(lang, `/exposicoes/${e.slug}`)} data-kind={e.kind} data-preview={e.images[0] ? imgUrl(e.images[0], 700) : ''} data-kind-label={e.kind === 'solo' ? ui.soloOne : ui.groupOne}>{inner}</a>
         );
       })}
-      <p class="end-glyph" aria-hidden="true">❦</p>
+      <p class="end-glyph" aria-hidden="true">❦︎</p>
     </div>
   </div>
 

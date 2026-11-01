@@ -2,7 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import { getContent } from '../../../lib/content.js';
 import { UI, href, t } from '../../../lib/i18n.js';
-import { imgUrl, srcset } from '../../../lib/img.js';
+import { imgUrl, srcset, ratio } from '../../../lib/img.js';
 
 export async function getStaticPaths() {
   const { works } = await getContent();
@@ -22,7 +22,7 @@ const shows = (work.exhibitions || []).filter(Boolean);
 ---
 <Base lang={lang} section="works" path={`/obras/${work.slug}`} title={`${title}, ${work.year}`} description={[title, work.year, t(work.technique, lang), work.dimensions].filter(Boolean).join(' · ')} image={work.images[0]}>
   <article class="work" data-gallery>
-    <div class="work-stage">
+    <div class="work-stage" style={`--r0:${ratio(work.images?.[0])}`}>
       {work.images.map((im, i) => (
         <img class={i === 0 ? 'is-on' : ''} src={imgUrl(im, 1800)} srcset={srcset(im)} sizes="(max-width: 800px) 100vw, 70vw" alt={im.alt || `${title}, ${work.year} — Marina Woisky (${ui.view} ${i + 1})`} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
       ))}

@@ -165,9 +165,40 @@ ul { padding: 0; list-style: none; }
   .about > .lab { margin-top: 28px; }
   .show-photos { grid-template-columns: 1fr; }
   .work { height: auto; min-height: 0; padding: 64px var(--edge) 120px; }
-  .work-stage { position: relative; left: auto; right: auto; top: auto; bottom: auto; aspect-ratio: 1; }
+  .work-stage { position: relative; left: auto; right: auto; top: auto; bottom: auto; aspect-ratio: var(--r0, 1); max-height: 70vh; margin-inline: auto; }
   .work-info { position: static; transform: none; width: auto; margin-top: 20px; }
   .exh-list { max-width: none; }
+
+  /* Barras fixas: em cima (nome + idioma) e embaixo (menu + cantos), com fundo branco,
+     para o texto que rola nunca passar por baixo delas. Na abertura 3D ficam transparentes. */
+  body::before, body::after { content: ''; position: fixed; left: 0; right: 0; z-index: 19; background: var(--bg); pointer-events: none; transition: background-color .4s; }
+  body::before { top: 0; height: calc(48px + env(safe-area-inset-top, 0px)); }
+  body::after { bottom: 0; height: calc(60px + env(safe-area-inset-bottom, 0px)); }
+  body.is-intro::before, body.is-intro::after { background: transparent; }
+  body:not(.is-intro) .dif { mix-blend-mode: normal; color: var(--ink); }
+  body:not(.is-intro) .dif a, body:not(.is-intro) .dif button { color: var(--ink); }
+  .site-name { top: calc(14px + env(safe-area-inset-top, 0px)); font-size: 15px; }
+  .lang { top: calc(16px + env(safe-area-inset-top, 0px)); }
+  .menu { bottom: calc(14px + env(safe-area-inset-bottom, 0px)); left: var(--edge); }
+  .menu ul { background: var(--bg); }
+  .corner-br { bottom: calc(14px + env(safe-area-inset-bottom, 0px)); gap: 18px; }
+  .corner-title { display: none; }
+  .opener-caption { bottom: calc(22px + env(safe-area-inset-bottom, 0px)); }
+  .page { padding-top: 76px; padding-bottom: 120px; }
+
+  /* listas: título e ano na 1ª linha; veículo/contexto e "Ler" logo abaixo, alinhados à esquerda */
+  .row { padding: 10px 0; row-gap: 2px; }
+  .pub-row > :nth-child(4), .txt-row > :nth-child(5) { grid-column: 1 / -1; text-align: left !important; }
+  .pub-row > :nth-child(4):empty { display: none; }
+  .pub-row .ln { font-size: 14px; }
+  .pub-row, .txt-row { align-items: start; }
+  .pub-row > :nth-child(2), .txt-row > :nth-child(3) { line-height: 1.2; }
+  .corner-br { align-items: center; min-height: 36px; }
+  .arw { font-family: var(--glyph); font-style: normal; font-size: .9em; }
+  .filters { row-gap: 2px; }
+  .exh-row { grid-template-columns: 48px minmax(0, 1fr); }
+  .work-info { margin-top: 28px; }
+  .tile .cap { padding-top: 8px; }
 }
 
 /* ------------------------------------------------------------ transições entre páginas

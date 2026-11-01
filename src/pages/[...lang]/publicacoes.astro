@@ -30,8 +30,8 @@ const { publications } = await getContent();
               {p.images.length ? <button type="button" class="dot" aria-expanded="false" aria-controls={id} data-toggle>{title}</button> : title}
             </span>
             <span class="muted">{p.year}</span>
-            <span>{p.outlet} <span style="color: var(--ink-3)">· {p.category === 'catalog' ? ui.catalog : ui.pressOne}</span></span>
-            <span style="text-align: right">{href && <a class="ln" href={href} target="_blank" rel="noopener">{ui.read} ↗</a>}</span>
+            <span>{p.outlet && <>{p.outlet} </>}<span style="color: var(--ink-3)">{p.outlet && '· '}{p.category === 'catalog' ? ui.catalog : ui.pressOne}</span></span>
+            <span style="text-align: right">{href && <a class="ln" href={href} target="_blank" rel="noopener">{ui.read}<span class="arw"> ↗︎</span></a>}</span>
           </div>
           {p.images.length > 0 && (
             <div class="expand" id={id}>
@@ -45,7 +45,7 @@ const { publications } = await getContent();
         </div>
       );
     })}
-    <p class="end-glyph" aria-hidden="true">❦</p>
+    <p class="end-glyph" aria-hidden="true">❦︎</p>
   </div>
 
   <script>

@@ -17,7 +17,7 @@ const { texts, settings } = await getContent();
       <button type="button" data-f="by" aria-pressed="false">{ui.by}</button><span aria-hidden="true">/</span>
       <button type="button" data-f="about" aria-pressed="false">{ui.on}</button>
       {settings?.newsletter && <span class="spacer"></span>}
-      {settings?.newsletter && <a class="ln" style="color: var(--ink)" href={settings.newsletter} target="_blank" rel="noopener">{ui.newsletter} ↗</a>}
+      {settings?.newsletter && <a class="ln" style="color: var(--ink)" href={settings.newsletter} target="_blank" rel="noopener">{ui.newsletter}<span class="arw"> ↗︎</span></a>}
     </div>
 
     {texts.map((x) => {
@@ -30,14 +30,14 @@ const { texts, settings } = await getContent();
             <span class="caps">{body ? <button type="button" class="dot" aria-expanded="false" aria-controls={id} data-toggle>{title}</button> : title}</span>
             <span>{x.author}</span>
             <span class="muted">{x.year}</span>
-            <span style="color: var(--ink-3)">{t(x.context, lang)}{x.link && <> · <a class="ln" href={x.link} target="_blank" rel="noopener">{ui.read} ↗</a></>}</span>
+            <span style="color: var(--ink-3)">{t(x.context, lang)}{x.link && <> · <a class="ln" href={x.link} target="_blank" rel="noopener">{ui.read}<span class="arw"> ↗︎</span></a></>}</span>
           </div>
           {body && (
             <div class="expand" id={id}>
               <div>
                 <article class="reading" style="padding: 14px 0 36px">
                   <Fragment set:html={body} />
-                  <p class="end-glyph" style="padding-top: 14px" aria-hidden="true">❦</p>
+                  <p class="end-glyph" style="padding-top: 14px" aria-hidden="true">❦︎</p>
                 </article>
               </div>
             </div>
@@ -45,7 +45,7 @@ const { texts, settings } = await getContent();
         </div>
       );
     })}
-    <p class="end-glyph" aria-hidden="true">❦</p>
+    <p class="end-glyph" aria-hidden="true">❦︎</p>
   </div>
 
   <script>

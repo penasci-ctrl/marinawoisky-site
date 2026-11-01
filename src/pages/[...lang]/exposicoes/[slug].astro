@@ -52,18 +52,18 @@ const imgs = show.images || [];
               {show.works.map((w) => <dd><a class="ln" href={href(lang, `/obras/${w.slug}`)}>{t(w.title, lang)}, {w.year}</a></dd>)}
             </div>
           )}
-          {show.link && <div><dt class="label">Link</dt><dd><a class="ln" href={show.link} target="_blank" rel="noopener">{ui.visit} ↗</a></dd></div>}
+          {show.link && <div><dt class="label">Link</dt><dd><a class="ln" href={show.link} target="_blank" rel="noopener">{ui.visit}<span class="arw"> ↗︎</span></a></dd></div>}
         </dl>
       </div>
       <div class="reading">
         {body && <Fragment set:html={body} />}
-        {body && <p class="end-glyph" style="padding-top: 14px" aria-hidden="true">❦</p>}
+        {body && <p class="end-glyph" style="padding-top: 14px" aria-hidden="true">❦︎</p>}
       </div>
     </section>
   </article>
 
   <div class="corner-br frame dif">
-    <span>{title}</span>
+    <span class="corner-title">{title}</span>
     <a href={href(lang, `/exposicoes/${next.slug}`)}>{ui.next}</a>
   </div>
 </Base>
