@@ -13,9 +13,6 @@ const opening = settings?.opening || {};
 const openingWork = opening.work;
 const hasModel = !!opening.web;
 const tiles = works.filter((w) => w.images?.length);
-// Proporções livres, tamanho parecido: todas as capas ocupam mais ou menos a mesma área.
-// Horizontais (4:3 ou mais) usam a coluna inteira; quadradas ~87%; verticais 2:3 ~71% da largura.
-const scale = (img) => Math.min(1, Math.sqrt(ratio(img)) * 0.866).toFixed(3);
 ---
 <Base lang={lang} section="works" path="/" intro={hasModel}>
   {hasModel && (
@@ -37,7 +34,7 @@ const scale = (img) => Math.min(1, Math.sqrt(ratio(img)) * 0.866).toFixed(3);
         const hover = w.images[1];
         const title = t(w.title, lang);
         return (
-          <a class="tile" href={href(lang, `/obras/${w.slug}`)} style={`--r:${ratio(cover)};--k:${scale(cover)}`} data-ratio={ratio(cover)}>
+          <a class="tile" href={href(lang, `/obras/${w.slug}`)} style={`--r:${ratio(cover)}`} data-ratio={ratio(cover)}>
             <span class="ph">
               <img src={imgUrl(cover, 1200)} srcset={srcset(cover)} sizes="(max-width: 800px) 100vw, 50vw" alt={cover.alt || title} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" width={cover.w} height={cover.h} />
               {hover && <img class="alt" src={imgUrl(hover, 1200)} srcset={srcset(hover)} sizes="50vw" alt="" loading="lazy" decoding="async" />}
@@ -98,7 +95,8 @@ const scale = (img) => Math.min(1, Math.sqrt(ratio(img)) * 0.866).toFixed(3);
       const placed = [];
       let y = 0;
       tiles.forEach((el) => {
-        const w = widths[Math.floor(Math.random() * widths.length)] * W * Math.max(0.75, Number(el.style.getPropertyValue('--k')) || 1);
+        const r = Number(el.dataset.ratio);
+        const w = Math.min(widths[Math.floor(Math.random() * widths.length)] * W, r * innerHeight * 0.5); // nenhuma obra mais alta que meia tela
         const h = w / Number(el.dataset.ratio) + 36;
         const x = Math.round((Math.random() * (W - w)) / 40) * 40;
         y += 40 * Math.floor(Math.random() * 3);

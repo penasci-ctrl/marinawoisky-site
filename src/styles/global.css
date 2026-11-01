@@ -82,7 +82,10 @@ ul { padding: 0; list-style: none; }
 .opener-caption { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 15; white-space: nowrap; transition: opacity .6s; }
 .works { position: relative; z-index: 5; margin-top: 100vh; background: var(--bg); padding: 80px 12px 160px; min-height: 100vh; }
 .zz { position: relative; }
-.zz .tile { display: block; width: calc((50% - 12px) * var(--k, 1)); position: relative; }
+.zz .tile { display: block; position: relative; }
+/* Tamanho padrão das capas: todas com a mesma altura-alvo (o menor entre 68% da coluna e 58% da tela);
+   horizontais largas param na largura da coluna. Proporção livre, nenhuma imagem gigante. */
+.zz .tile { width: min(calc(50% - 12px), calc(var(--r) * min((50vw - 18px) * .68, 58vh))); }
 .zz .tile:nth-child(odd) { margin-right: auto; }
 .zz .tile:nth-child(even) { margin-left: auto; }
 .tile .ph { display: block; position: relative; aspect-ratio: var(--r); background: #f0f0ee; }
@@ -144,7 +147,7 @@ ul { padding: 0; list-style: none; }
   .site-name { top: 14px; }
   .lang { top: 14px; }
   .page { padding-top: 84px; }
-  .zz .tile { width: calc(100% * var(--k, 1)); }
+  .zz .tile { width: min(100%, calc(var(--r) * min(80vw, 56vh))); }
   .zz .tile + .tile { margin-top: 40px; }
   .tile .cap, .tile:nth-child(even) .cap { position: static; flex-direction: row-reverse; }
   .exh-preview { display: none; }
