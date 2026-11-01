@@ -114,7 +114,7 @@ const tiles = works.filter((w) => w.images?.length);
     function setMode(mode) {
       const first = tiles.map((el) => el.getBoundingClientRect());
       zz.classList.toggle('is-random', mode === 'random');
-      if (mode === 'random') layoutRandom();
+      if (mode === 'random') layoutRandom(); else fitZigzag();
       btns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
       if (reduce) return;
       tiles.forEach((el, i) => {
@@ -126,7 +126,29 @@ const tiles = works.filter((w) => w.images?.length);
         );
       });
     }
+    // ---- Ziguezague: cada obra sobe até 45% da anterior, mas nunca encosta na obra (e legenda) da mesma coluna
+    function fitZigzag() {
+      if (!zz) return;
+      const desk = innerWidth > 800 && !zz.classList.contains('is-random');
+      tiles.forEach((el) => (el.style.marginTop = ''));
+      if (!desk) return;
+      const GAP = 56;
+      tiles.forEach((el, i) => {
+        if (i === 0) return;
+        el.style.marginTop = '0px';
+        const prev = tiles[i - 1];
+        const prevBottom = prev.offsetTop + prev.offsetHeight;
+        const sameCol = tiles[i - 2];
+        const limit = sameCol ? prevBottom - (sameCol.offsetTop + sameCol.offsetHeight) - GAP : Infinity;
+        const pull = Math.max(0, Math.min(prev.offsetHeight * 0.45, limit));
+        el.style.marginTop = `${-pull}px`;
+      });
+    }
+    fitZigzag();
+    addEventListener('load', fitZigzag);
+    document.fonts?.ready.then(fitZigzag);
+
     btns.forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
-    addEventListener('resize', () => { if (zz?.classList.contains('is-random')) layoutRandom(); });
+    addEventListener('resize', () => { if (zz?.classList.contains('is-random')) layoutRandom(); else fitZigzag(); });
   </script>
 </Base>
