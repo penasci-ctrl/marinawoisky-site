@@ -88,33 +88,41 @@ const tiles = works.filter((w) => w.images?.length);
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     function layoutRandom() {
-      // larguras sorteadas, posição horizontal em degraus de 40 px e nenhuma obra cobrindo outra
+      // Embaralha tudo: a ordem das obras (inclusive no HTML, para o teclado seguir a nova ordem),
+      // os tamanhos e as posições. Cada clique em "Aleatório" sorteia de novo.
       const W = zz.clientWidth;
       const mobile = W < 700;
-      const widths = mobile ? [0.62, 0.78, 0.9] : [0.24, 0.32, 0.42];
+      const shuffled = [...tiles];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      zz.append(...shuffled);
       const placed = [];
-      let y = 0;
-      tiles.forEach((el) => {
+      const GAP = mobile ? 20 : 28;
+      shuffled.forEach((el) => {
         const r = Number(el.dataset.ratio);
-        const w = Math.min(widths[Math.floor(Math.random() * widths.length)] * W, r * innerHeight * 0.5); // nenhuma obra mais alta que meia tela
-        const h = w / Number(el.dataset.ratio) + 36;
-        const x = Math.round((Math.random() * (W - w)) / 40) * 40;
-        y += 40 * Math.floor(Math.random() * 3);
-        const hits = (yy) => placed.some((r) => x < r.x + r.w + 24 && x + w + 24 > r.x && yy < r.y + r.h + 24 && yy + h + 24 > r.y);
-        while (hits(y)) y += 40;
+        const frac = mobile ? 0.5 + Math.random() * 0.45 : 0.16 + Math.random() * 0.3; // largura contínua, não em 3 tamanhos
+        const w = Math.min(frac * W, r * innerHeight * 0.5); // nenhuma obra mais alta que meia tela
+        const h = w / r + 36;
+        const x = Math.round((Math.random() * (W - w)) / 20) * 20;
+        // procura o primeiro espaço livre de cima para baixo, com um pequeno salto aleatório
+        const hits = (yy) => placed.some((p) => x < p.x + p.w + GAP && x + w + GAP > p.x && yy < p.y + p.h + GAP && yy + h + GAP > p.y);
+        let y = Math.round(Math.random() * 3) * 40;
+        while (hits(y)) y += 20;
         placed.push({ x, y, w, h });
         el.style.setProperty('--x', `${x}px`);
         el.style.setProperty('--y', `${y}px`);
         el.style.setProperty('--w', `${w}px`);
       });
-      const bottom = Math.max(0, ...placed.map((r) => r.y + r.h));
+      const bottom = Math.max(0, ...placed.map((p) => p.y + p.h));
       zz.style.setProperty('--zz-h', `${bottom + 80}px`);
     }
 
     function setMode(mode) {
       const first = tiles.map((el) => el.getBoundingClientRect());
       zz.classList.toggle('is-random', mode === 'random');
-      if (mode === 'random') layoutRandom(); else fitZigzag();
+      if (mode === 'random') layoutRandom(); else { zz.append(...tiles); fitZigzag(); } // volta à ordem cronológica
       btns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
       if (reduce) return;
       tiles.forEach((el, i) => {

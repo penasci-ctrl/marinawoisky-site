@@ -108,7 +108,15 @@ async function describe(env, src, ctx = {}) {
   const image = `data:image/jpeg;base64,${btoa(bin)}`;
 
   // 1) olhar
-  const look = { messages: [{ role: 'user', content: LOOK_PROMPT }], image, max_tokens: 200, temperature: 0 };
+  const look = {
+    messages: [
+      { role: 'system', content: 'You are a careful, literal describer of photographs.' },
+      { role: 'user', content: LOOK_PROMPT },
+    ],
+    image,
+    max_tokens: 200,
+    temperature: 0,
+  };
   let seen;
   try {
     seen = await env.AI.run(VISION_MODEL, look);
