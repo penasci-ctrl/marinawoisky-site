@@ -7,7 +7,7 @@ import { structure } from './structure'
 export default defineConfig({
   name: 'marinawoisky',
   title: 'Marina Woisky',
-  projectId: process.env.SANITY_STUDIO_PROJECT_ID,
+  projectId: process.env.SANITY_STUDIO_PROJECT_ID || 'wqz875em',
   dataset: process.env.SANITY_STUDIO_DATASET || 'production',
   plugins: [structureTool({ structure }), visionTool()],
   schema: {

@@ -44,6 +44,7 @@ Painel local: `cd studio && npm install && SANITY_STUDIO_PROJECT_ID=xxxx npm run
 5. **Publicação automática.** Na Cloudflare: Settings → Builds → Deploy hooks → criar (branch `main`) e copiar o endereço.
    No Sanity: sanity.io/manage → API → Webhooks → Create: URL = o deploy hook, Dataset `production`, Trigger on create/update/delete, Filter vazio, HTTP method POST, sem payload. (O plano Free permite 2 webhooks.)
 6. **Testar** no endereço `*.pages.dev` com a Marina.
+6b. **CORS.** O site carrega o modelo 3D direto do Sanity, então o endereço do site precisa estar em sanity.io/manage → API → CORS origins (sem credenciais). Já cadastrados: `marinawoisky-site.pages.dev`, `*.marinawoisky-site.pages.dev`, `marinawoisky.com`, `www.marinawoisky.com`, `localhost:4321`. Se o projeto na Cloudflare ganhar outro nome, cadastre o novo endereço.
 7. **Domínio.** Cloudflare Pages → Custom domains → `marinawoisky.com` e `www.marinawoisky.com`. Se o domínio tiver e-mail, mantenha os registros MX. Só depois cancelar o Wix (exportando antes imagens e textos).
 
 ## Critério de aceite
