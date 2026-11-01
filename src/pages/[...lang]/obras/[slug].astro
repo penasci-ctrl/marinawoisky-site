@@ -24,7 +24,7 @@ const shows = (work.exhibitions || []).filter(Boolean);
   <article class="work" data-gallery>
     <div class="work-stage">
       {work.images.map((im, i) => (
-        <img class={i === 0 ? 'is-on' : ''} src={imgUrl(im, 1800)} srcset={srcset(im)} sizes="(max-width: 800px) 100vw, 70vw" alt={im.alt || `${title}, ${ui.view} ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
+        <img class={i === 0 ? 'is-on' : ''} src={imgUrl(im, 1800)} srcset={srcset(im)} sizes="(max-width: 800px) 100vw, 70vw" alt={im.alt || `${title}, ${work.year} — Marina Woisky (${ui.view} ${i + 1})`} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
       ))}
       {n > 1 && <button class="zone l" type="button" aria-label={ui.prev} data-step="-1"></button>}
       {n > 1 && <button class="zone r" type="button" aria-label={ui.nextImg} data-step="1"></button>}

@@ -30,7 +30,7 @@ const imgs = show.images || [];
       <div class="show-photos">
         {imgs.map((im, i) => (
           <figure class={i > 0 && i === imgs.length - 1 && i % 2 === 1 ? 'wide' : ''}>
-            <img src={imgUrl(im, i === 0 ? 1600 : 900)} srcset={srcset(im)} sizes={i === 0 ? '(max-width: 800px) 100vw, 760px' : '(max-width: 800px) 100vw, 370px'} alt={im.alt || title} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" width={im.w} height={im.h} />
+            <img src={imgUrl(im, i === 0 ? 1600 : 900)} srcset={srcset(im)} sizes={i === 0 ? '(max-width: 800px) 100vw, 760px' : '(max-width: 800px) 100vw, 370px'} alt={im.alt || (lang === 'en' ? `Installation view, ${title}, ${show.venue}` : `Vista da exposição ${title}, ${show.venue}`)} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" width={im.w} height={im.h} />
           </figure>
         ))}
       </div>

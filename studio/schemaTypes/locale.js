@@ -59,7 +59,7 @@ export const altImage = defineType({
       title: 'Descrição da imagem (para quem não enxerga)',
       type: 'string',
       components: { input: AltInput },
-      validation: (r) => r.required().error('Descreva a imagem em uma frase (ou clique em Gerar descrição).'),
+      validation: (r) => r.custom((v) => (v ? true : 'Sem descrição: o site usa o título no lugar. Se quiser, clique em Gerar descrição.')).warning(),
     }),
     defineField({ name: 'caption', title: 'Legenda (opcional)', type: 'string' }),
   ],

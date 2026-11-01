@@ -37,7 +37,7 @@ const { publications } = await getContent();
             <div class="expand" id={id}>
               <div>
                 <div class="pub-photos">
-                  {p.images.map((im) => <img src={imgUrl(im, 1100)} srcset={srcset(im)} sizes="520px" alt={im.alt || title} loading="lazy" decoding="async" width={im.w} height={im.h} />)}
+                  {p.images.map((im) => <img src={imgUrl(im, 1100)} srcset={srcset(im)} sizes="520px" alt={im.alt || (lang === 'en' ? `${title}, pages` : `${title}, páginas`)} loading="lazy" decoding="async" width={im.w} height={im.h} />)}
                 </div>
               </div>
             </div>
