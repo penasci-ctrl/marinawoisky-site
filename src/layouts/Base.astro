@@ -1,0 +1,100 @@
+---
+import '../styles/global.css';
+import { UI, href, t } from '../lib/i18n.js';
+import { imgUrl } from '../lib/img.js';
+import { getContent } from '../lib/content.js';
+
+/**
+ * Moldura comum a todas as páginas: nome no topo, PT/EN, menu no canto inferior esquerdo.
+ * section: 'works' | 'exhibitions' | 'publications' | 'texts' | 'about'
+ * path: caminho desta página sem o prefixo de idioma (para o seletor PT/EN)
+ */
+const { lang = 'pt', section, path = '/', title, description, image, intro = false } = Astro.props;
+const ui = UI[lang];
+const { settings } = await getContent();
+const siteTitle = 'Marina Woisky';
+const fullTitle = title ? `${title} · ${siteTitle}` : siteTitle;
+const desc = description || t(settings?.description, lang) || siteTitle;
+const shareImg = image || settings?.shareImage;
+const ogImage = shareImg ? new URL(imgUrl(shareImg, 1200), Astro.site).href : undefined;
+const canonical = new URL(href(lang, path), Astro.site).href;
+const altPt = new URL(href('pt', path), Astro.site).href;
+const altEn = new URL(href('en', path), Astro.site).href;
+
+const SECTIONS = [
+  ['works', '/'],
+  ['exhibitions', '/exposicoes'],
+  ['publications', '/publicacoes'],
+  ['texts', '/textos'],
+  ['about', '/sobre'],
+];
+const current = SECTIONS.find(([k]) => k === section);
+const others = SECTIONS.filter(([k]) => k !== section);
+---
+<!doctype html>
+<html lang={lang === 'en' ? 'en' : 'pt-BR'}>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>{fullTitle}</title>
+  <meta name="description" content={desc} />
+  <link rel="canonical" href={canonical} />
+  <link rel="alternate" hreflang="pt-BR" href={altPt} />
+  <link rel="alternate" hreflang="en" href={altEn} />
+  <link rel="alternate" hreflang="x-default" href={altPt} />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content={siteTitle} />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={desc} />
+  <meta property="og:url" content={canonical} />
+  {ogImage && <meta property="og:image" content={ogImage} />}
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Maitree:wght@300;400&family=Noto+Sans+Symbols+2&display=swap" />
+  <slot name="head" />
+</head>
+<body class={intro ? 'is-intro' : ''}>
+  <a class="site-name frame dif" href={href(lang, '/')} data-to-top={section === 'works' ? '' : undefined}>Marina Woisky</a>
+
+  <div class="lang frame dif chrome">
+    <a href={href('pt', path)} lang="pt-BR" aria-current={lang === 'pt' ? 'true' : 'false'}>PT</a>
+    <span aria-hidden="true">/</span>
+    <a href={href('en', path)} lang="en" aria-current={lang === 'en' ? 'true' : 'false'}>EN</a>
+  </div>
+
+  <nav class="menu frame dif chrome" aria-label={ui.menu}>
+    {current && (
+      <button class="menu-current" type="button" aria-expanded="false" data-menu-toggle>{ui[current[0]]}</button>
+    )}
+    <ul>
+      {others.map(([k, p]) => <li><a href={href(lang, p)}>{ui[k]}</a></li>)}
+    </ul>
+  </nav>
+
+  <main>
+    <slot />
+  </main>
+
+  <script>
+    // Menu: no computador abre com o mouse (CSS); no toque, abre e fecha com um toque
+    const menu = document.querySelector('.menu');
+    const btn = document.querySelector('[data-menu-toggle]');
+    if (menu && btn) {
+      btn.addEventListener('click', () => {
+        if (matchMedia('(hover: hover)').matches) return;
+        const open = menu.classList.toggle('is-open');
+        btn.setAttribute('aria-expanded', String(open));
+      });
+      document.addEventListener('click', (e) => {
+        if (!menu.contains(e.target)) { menu.classList.remove('is-open'); btn.setAttribute('aria-expanded', 'false'); }
+      });
+    }
+    // Na home, o nome volta suave para a abertura
+    document.querySelector('[data-to-top]')?.addEventListener('click', (e) => {
+      if (location.pathname === e.currentTarget.getAttribute('href')) { e.preventDefault(); scrollTo({ top: 0, behavior: 'smooth' }); }
+    });
+  </script>
+</body>
+</html>

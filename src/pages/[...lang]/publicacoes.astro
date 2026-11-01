@@ -1,0 +1,55 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getContent } from '../../lib/content.js';
+import { UI, t, langPaths } from '../../lib/i18n.js';
+import { imgUrl, srcset } from '../../lib/img.js';
+
+export function getStaticPaths() { return langPaths(); }
+
+const { lang } = Astro.props;
+const ui = UI[lang];
+const { publications } = await getContent();
+---
+<Base lang={lang} section="publications" path="/publicacoes" title={ui.publications}>
+  <div class="page">
+    <h1 class="sr-only">{ui.publications}</h1>
+    <div class="filters caps" role="group" data-filters>
+      <button type="button" data-f="all" aria-pressed="true">{ui.all_f}</button><span aria-hidden="true">/</span>
+      <button type="button" data-f="catalog" aria-pressed="false">{ui.catalogs}</button><span aria-hidden="true">/</span>
+      <button type="button" data-f="press" aria-pressed="false">{ui.press}</button>
+    </div>
+
+    {publications.map((p) => {
+      const title = t(p.title, lang);
+      const href = p.link || p.pdf;
+      const id = `pub-${p.id}`;
+      return (
+        <div class="pub" data-kind={p.category} data-item>
+          <div class="row pub-row">
+            <span class="caps">
+              {p.images.length ? <button type="button" class="dot" aria-expanded="false" aria-controls={id} data-toggle>{title}</button> : title}
+            </span>
+            <span class="muted">{p.year}</span>
+            <span>{p.outlet} <span style="color: var(--ink-3)">· {p.category === 'catalog' ? ui.catalog : ui.pressOne}</span></span>
+            <span style="text-align: right">{href && <a class="ln" href={href} target="_blank" rel="noopener">{ui.read} ↗</a>}</span>
+          </div>
+          {p.images.length > 0 && (
+            <div class="expand" id={id}>
+              <div>
+                <div class="pub-photos">
+                  {p.images.map((im) => <img src={imgUrl(im, 1100)} srcset={srcset(im)} sizes="520px" alt={im.alt || title} loading="lazy" decoding="async" width={im.w} height={im.h} />)}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    })}
+    <p class="end-glyph" aria-hidden="true">❦</p>
+  </div>
+
+  <script>
+    import { wireList } from '../../lib/list.js';
+    wireList();
+  </script>
+</Base>

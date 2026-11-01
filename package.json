@@ -1,0 +1,21 @@
+{
+  "name": "marinawoisky-site",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "import:seed": "node scripts/import-seed.mjs"
+  },
+  "dependencies": {
+    "@portabletext/to-html": "^2.0.14",
+    "@sanity/client": "^7.11.0",
+    "astro": "5.18.2",
+    "three": "0.169.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

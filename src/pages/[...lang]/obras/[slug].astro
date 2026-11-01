@@ -1,0 +1,73 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { getContent } from '../../../lib/content.js';
+import { UI, href, t } from '../../../lib/i18n.js';
+import { imgUrl, srcset } from '../../../lib/img.js';
+
+export async function getStaticPaths() {
+  const { works } = await getContent();
+  return ['pt', 'en'].flatMap((lang) =>
+    works.map((w, i) => ({
+      params: { lang: lang === 'en' ? 'en' : undefined, slug: w.slug },
+      props: { lang, work: w, next: works[(i + 1) % works.length] },
+    }))
+  );
+}
+
+const { lang, work, next } = Astro.props;
+const ui = UI[lang];
+const title = t(work.title, lang);
+const n = work.images.length;
+const shows = (work.exhibitions || []).filter(Boolean);
+---
+<Base lang={lang} section="works" path={`/obras/${work.slug}`} title={`${title}, ${work.year}`} description={[title, work.year, t(work.technique, lang), work.dimensions].filter(Boolean).join(' · ')} image={work.images[0]}>
+  <article class="work" data-gallery>
+    <div class="work-stage">
+      {work.images.map((im, i) => (
+        <img class={i === 0 ? 'is-on' : ''} src={imgUrl(im, 1800)} srcset={srcset(im)} sizes="(max-width: 800px) 100vw, 70vw" alt={im.alt || `${title}, ${ui.view} ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
+      ))}
+      {n > 1 && <button class="zone l" type="button" aria-label={ui.prev} data-step="-1"></button>}
+      {n > 1 && <button class="zone r" type="button" aria-label={ui.nextImg} data-step="1"></button>}
+    </div>
+
+    <aside class="work-info">
+      <h1 class="caps" style="font-weight: 400; line-height: 1.4">{title}, {work.year}</h1>
+      <dl>
+        {work.technique && <div><dt class="label">{ui.technique}</dt><dd>{t(work.technique, lang)}</dd></div>}
+        {work.dimensions && <div><dt class="label">{ui.dimensions}</dt><dd>{work.dimensions}</dd></div>}
+        {shows.length > 0 && (
+          <div><dt class="label">{ui.exhibition}</dt>
+            {shows.map((e) => (
+              <dd>{e.showInCvOnly ? `${t(e.title, lang)}, ${e.year}` : <a class="ln" href={href(lang, `/exposicoes/${e.slug}`)}>{t(e.title, lang)}, {e.year}</a>}</dd>
+            ))}
+          </div>
+        )}
+        {work.photoCredit && <div><dt class="label">{ui.photo}</dt><dd>{work.photoCredit}</dd></div>}
+      </dl>
+    </aside>
+  </article>
+
+  <div class="corner-br frame">
+    {n > 1 && <span class="work-counter" style="font-size: 16px; letter-spacing: 0; text-transform: none" data-counter>1 / {n}</span>}
+    <a href={href(lang, `/obras/${next.slug}`)}>{ui.next}</a>
+  </div>
+
+  <script>
+    const g = document.querySelector('[data-gallery]');
+    const imgs = [...g.querySelectorAll('.work-stage img')];
+    const counter = document.querySelector('[data-counter]');
+    let i = 0;
+    const go = (d) => {
+      imgs[i].classList.remove('is-on');
+      i = (i + d + imgs.length) % imgs.length;
+      imgs[i].classList.add('is-on');
+      if (counter) counter.textContent = `${i + 1} / ${imgs.length}`;
+    };
+    g.querySelectorAll('[data-step]').forEach((b) => b.addEventListener('click', () => go(Number(b.dataset.step))));
+    addEventListener('keydown', (e) => { if (e.key === 'ArrowRight') go(1); if (e.key === 'ArrowLeft') go(-1); });
+    // no celular, arrastar para o lado também troca a foto
+    let x0 = null;
+    g.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+    g.addEventListener('touchend', (e) => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1); x0 = null; });
+  </script>
+</Base>

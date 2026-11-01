@@ -1,0 +1,67 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { getContent } from '../../../lib/content.js';
+import { UI, href, t, langPaths } from '../../../lib/i18n.js';
+import { imgUrl } from '../../../lib/img.js';
+
+export function getStaticPaths() { return langPaths(); }
+
+const { lang } = Astro.props;
+const ui = UI[lang];
+const { exhibitions } = await getContent();
+---
+<Base lang={lang} section="exhibitions" path="/exposicoes" title={ui.exhibitions}>
+  <div class="page">
+    <h1 class="sr-only">{ui.exhibitions}</h1>
+    <div class="filters caps" role="group" data-filters>
+      <button type="button" data-f="all" aria-pressed="true">{ui.all_f}</button><span aria-hidden="true">/</span>
+      <button type="button" data-f="solo" aria-pressed="false">{ui.solo}</button><span aria-hidden="true">/</span>
+      <button type="button" data-f="group" aria-pressed="false">{ui.group}</button>
+    </div>
+
+    <div class="exh-list">
+      {exhibitions.map((e) => {
+        const place = [e.venue, t(e.city, lang)].filter(Boolean).join(', ');
+        const note = t(e.note, lang);
+        const inner = (
+          <>
+            <span class="muted">{e.year}</span>
+            <span><span class="caps">{t(e.title, lang)}</span> <span class="muted">— {place}{note ? ` (${note})` : ''}</span></span>
+          </>
+        );
+        return e.showInCvOnly ? (
+          <div class="row exh-row" data-kind={e.kind}>{inner}</div>
+        ) : (
+          <a class="row exh-row row-hover" href={href(lang, `/exposicoes/${e.slug}`)} data-kind={e.kind} data-preview={e.images[0] ? imgUrl(e.images[0], 700) : ''} data-kind-label={e.kind === 'solo' ? ui.soloOne : ui.groupOne}>{inner}</a>
+        );
+      })}
+      <p class="end-glyph" aria-hidden="true">❦</p>
+    </div>
+  </div>
+
+  <div class="exh-preview" aria-hidden="true" data-preview-box>
+    <img alt="" />
+    <span class="muted" style="display:block; margin-top:6px"></span>
+  </div>
+
+  <script>
+    const rows = [...document.querySelectorAll('.exh-row')];
+    // filtro
+    const btns = document.querySelectorAll('[data-filters] button');
+    btns.forEach((b) => b.addEventListener('click', () => {
+      btns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      rows.forEach((r) => { r.hidden = b.dataset.f !== 'all' && r.dataset.kind !== b.dataset.f; });
+    }));
+    // miniatura ao passar o mouse
+    const box = document.querySelector('[data-preview-box]');
+    const img = box.querySelector('img'), lab = box.querySelector('span');
+    rows.forEach((r) => {
+      r.addEventListener('mouseenter', () => {
+        if (!r.dataset.preview) { box.classList.remove('is-on'); return; }
+        img.src = r.dataset.preview; lab.textContent = r.dataset.kindLabel || '';
+        box.classList.add('is-on');
+      });
+      r.addEventListener('mouseleave', () => box.classList.remove('is-on'));
+    });
+  </script>
+</Base>

@@ -1,0 +1,55 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getContent } from '../../lib/content.js';
+import { UI, t, tBlocks, langPaths } from '../../lib/i18n.js';
+
+export function getStaticPaths() { return langPaths(); }
+
+const { lang } = Astro.props;
+const ui = UI[lang];
+const { texts, settings } = await getContent();
+---
+<Base lang={lang} section="texts" path="/textos" title={ui.texts}>
+  <div class="page">
+    <h1 class="sr-only">{ui.texts}</h1>
+    <div class="filters caps" role="group" data-filters>
+      <button type="button" data-f="all" aria-pressed="true">{ui.all_m}</button><span aria-hidden="true">/</span>
+      <button type="button" data-f="by" aria-pressed="false">{ui.by}</button><span aria-hidden="true">/</span>
+      <button type="button" data-f="about" aria-pressed="false">{ui.on}</button>
+      {settings?.newsletter && <span class="spacer"></span>}
+      {settings?.newsletter && <a class="ln" style="color: var(--ink)" href={settings.newsletter} target="_blank" rel="noopener">{ui.newsletter} ↗</a>}
+    </div>
+
+    {texts.map((x) => {
+      const title = t(x.title, lang);
+      const body = tBlocks(x.body, lang);
+      const id = `txt-${x.id}`;
+      return (
+        <div data-kind={x.kind} data-item>
+          <div class="row txt-row">
+            <span class="caps">{body ? <button type="button" class="dot" aria-expanded="false" aria-controls={id} data-toggle>{title}</button> : title}</span>
+            <span>{x.author}</span>
+            <span class="muted">{x.year}</span>
+            <span style="color: var(--ink-3)">{t(x.context, lang)}{x.link && <> · <a class="ln" href={x.link} target="_blank" rel="noopener">{ui.read} ↗</a></>}</span>
+          </div>
+          {body && (
+            <div class="expand" id={id}>
+              <div>
+                <article class="reading" style="padding: 14px 0 36px">
+                  <Fragment set:html={body} />
+                  <p class="end-glyph" style="padding-top: 14px" aria-hidden="true">❦</p>
+                </article>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    })}
+    <p class="end-glyph" aria-hidden="true">❦</p>
+  </div>
+
+  <script>
+    import { wireList } from '../../lib/list.js';
+    wireList();
+  </script>
+</Base>

@@ -1,0 +1,63 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getContent } from '../../lib/content.js';
+import { UI, t, tBlocks, langPaths } from '../../lib/i18n.js';
+import { imgUrl, srcset } from '../../lib/img.js';
+
+export function getStaticPaths() { return langPaths(); }
+
+const { lang } = Astro.props;
+const ui = UI[lang];
+const { about, settings } = await getContent();
+const bio = tBlocks(about?.bio, lang);
+const galleries = settings?.galleries || [];
+const instagram = settings?.instagram;
+const hasContact = !!(settings?.email || instagram || about?.cvPdf);
+---
+<Base lang={lang} section="about" path="/sobre" title={ui.about} image={about?.portrait}>
+  <div class="page">
+    <h1 class="sr-only">{ui.about}</h1>
+    <div class="about">
+      <span></span>
+      <div class="reading"><Fragment set:html={bio} /></div>
+
+      {hasContact && <span class="lab caps">{ui.contact}</span>}
+      {hasContact && <div style="display: flex; flex-direction: column; gap: 2px; align-items: flex-start">
+        {settings?.email && <a class="ln" href={`mailto:${settings.email}`}>{settings.email}</a>}
+        {instagram && <a class="ln" href={instagram} target="_blank" rel="noopener">{ui.instagram}</a>}
+        {about?.cvPdf && <a class="ln" style="margin-top: 10px" href={about.cvPdf} target="_blank" rel="noopener">{ui.cvPdf}</a>}
+      </div>}
+
+      {galleries.length > 0 && <span class="lab caps">{galleries.length > 1 ? ui.galleries : ui.gallery}</span>}
+      {galleries.length > 0 && (
+        <div>
+          {galleries.map((g) => {
+            const label = [g.name, t(g.city, lang)].filter(Boolean).join(', ');
+            return <p>{g.url ? <a class="ln" href={g.url} target="_blank" rel="noopener">{label}</a> : label}</p>;
+          })}
+        </div>
+      )}
+
+      {(about?.cv || []).map((sec) => (
+        <>
+          <span class="lab caps">{t(sec.title, lang)}</span>
+          <div class="cv-list">
+            {(sec.entries || []).map((e) => (
+              <div class="cv-row"><span class="muted">{e.year}</span><span>{t(e.text, lang)}</span></div>
+            ))}
+          </div>
+        </>
+      ))}
+
+      {about?.portrait && <span></span>}
+      {about?.portrait && (
+        <figure>
+          <img src={imgUrl(about.portrait, 1300)} srcset={srcset(about.portrait)} sizes="(max-width: 800px) 100vw, 620px" alt={about.portrait.alt || 'Marina Woisky'} loading="lazy" decoding="async" width={about.portrait.w} height={about.portrait.h} />
+          {about.portraitCredit && <figcaption class="label">{ui.photo}: {about.portraitCredit}</figcaption>}
+        </figure>
+      )}
+      <span></span>
+      <p class="end-glyph" style="padding-top: 0" aria-hidden="true">❦</p>
+    </div>
+  </div>
+</Base>

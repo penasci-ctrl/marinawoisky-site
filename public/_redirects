@@ -1,0 +1,14 @@
+# Endereços do site antigo (Wix) para o novo. O Wix tinha tudo numa página só (/home, com âncoras).
+/home              /                301
+/home/*            /                301
+/obras             /                301
+/works             /en/             301
+/exhibitions       /en/exposicoes   301
+/publications      /en/publicacoes  301
+/bio               /sobre           301
+/cv                /sobre           301
+/bio-cv            /sobre           301
+/press             /publicacoes     301
+/imprensa          /publicacoes     301
+/contato           /sobre           301
+/contact           /en/sobre        301

@@ -1,0 +1,69 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { getContent } from '../../../lib/content.js';
+import { UI, href, t, tBlocks } from '../../../lib/i18n.js';
+import { imgUrl, srcset } from '../../../lib/img.js';
+
+export async function getStaticPaths() {
+  const { exhibitions } = await getContent();
+  const pages = exhibitions.filter((e) => !e.showInCvOnly);
+  return ['pt', 'en'].flatMap((lang) =>
+    pages.map((e, i) => ({
+      params: { lang: lang === 'en' ? 'en' : undefined, slug: e.slug },
+      props: { lang, show: e, next: pages[(i + 1) % pages.length] },
+    }))
+  );
+}
+
+const { lang, show, next } = Astro.props;
+const ui = UI[lang];
+const title = t(show.title, lang);
+const fmt = (d) => d && new Date(d + 'T12:00:00').toLocaleDateString(lang === 'en' ? 'en-GB' : 'pt-BR', { day: 'numeric', month: 'short', year: 'numeric' });
+const dates = [fmt(show.startDate), fmt(show.endDate)].filter(Boolean).join(' – ');
+const body = tBlocks(show.text, lang);
+// a 1ª foto vai larga; depois em pares; se sobrar uma, ela vai larga
+const imgs = show.images || [];
+---
+<Base lang={lang} section="exhibitions" path={`/exposicoes/${show.slug}`} title={title} description={[title, show.venue, t(show.city, lang), show.year].filter(Boolean).join(' · ')} image={imgs[0]}>
+  <article class="page" style="padding-top: 10px">
+    {imgs.length > 0 && (
+      <div class="show-photos">
+        {imgs.map((im, i) => (
+          <figure class={i > 0 && i === imgs.length - 1 && i % 2 === 1 ? 'wide' : ''}>
+            <img src={imgUrl(im, i === 0 ? 1600 : 900)} srcset={srcset(im)} sizes={i === 0 ? '(max-width: 800px) 100vw, 760px' : '(max-width: 800px) 100vw, 370px'} alt={im.alt || title} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" width={im.w} height={im.h} />
+          </figure>
+        ))}
+      </div>
+    )}
+
+    <section class="show-body" style={imgs.length ? undefined : 'margin-top: 86px'}>
+      <div>
+        <h1 class="caps" style="font-weight: 400; line-height: 1.4">{title}</h1>
+        <p class="muted">{show.kind === 'solo' ? ui.soloOne : ui.groupOne} · {show.year}</p>
+        <dl>
+          <div><dt class="label">{ui.venue}</dt><dd>{show.venue}</dd></div>
+          {show.city && <div><dt class="label">{ui.city}</dt><dd>{t(show.city, lang)}</dd></div>}
+          {show.note && <div><dt class="label">{ui.more}</dt><dd>{t(show.note, lang)}</dd></div>}
+          {dates && <div><dt class="label">{ui.dates}</dt><dd>{dates}</dd></div>}
+          {show.textAuthor && <div><dt class="label">{ui.text}</dt><dd>{show.textAuthor}</dd></div>}
+          {show.photoCredit && <div><dt class="label">{ui.photos}</dt><dd>{show.photoCredit}</dd></div>}
+          {show.works?.length > 0 && (
+            <div><dt class="label">{ui.worksShown}</dt>
+              {show.works.map((w) => <dd><a class="ln" href={href(lang, `/obras/${w.slug}`)}>{t(w.title, lang)}, {w.year}</a></dd>)}
+            </div>
+          )}
+          {show.link && <div><dt class="label">Link</dt><dd><a class="ln" href={show.link} target="_blank" rel="noopener">{ui.visit} ↗</a></dd></div>}
+        </dl>
+      </div>
+      <div class="reading">
+        {body && <Fragment set:html={body} />}
+        {body && <p class="end-glyph" style="padding-top: 14px" aria-hidden="true">❦</p>}
+      </div>
+    </section>
+  </article>
+
+  <div class="corner-br frame dif">
+    <span>{title}</span>
+    <a href={href(lang, `/exposicoes/${next.slug}`)}>{ui.next}</a>
+  </div>
+</Base>
