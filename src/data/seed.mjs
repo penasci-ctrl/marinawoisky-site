@@ -18,7 +18,7 @@ export const docs = [
   {
     _id: 'artwork-abraco-dos-leoes', _type: 'artwork',
     title: L('Abraço dos Leões'), slug: slug('abraco-dos-leoes'), year: 2026, order: 1,
-    technique: L('Impressão sobre tecido, argamassa e resina', 'Print on fabric, resin and cement'),
+    technique: L('Impressão sobre tecido, argamassa e resina', 'Print on fabric, resin and mortar'),
     dimensions: '48 × 102 × 3 cm', photoCredit: 'Filipe Berndt',
     images: [
       img('abraco-3.jpg', W, H, 'Abraço dos Leões: relevo de dois leões entrelaçados em tons de azul e cinza, na parede branca'),
@@ -29,7 +29,7 @@ export const docs = [
   {
     _id: 'artwork-cavalo-duplo', _type: 'artwork',
     title: L('Cavalo Duplo'), slug: slug('cavalo-duplo'), year: 2026, order: 2,
-    technique: L('Impressão sobre tecido, argamassa e resina', 'Print on fabric, resin and cement'),
+    technique: L('Impressão sobre tecido, argamassa e resina', 'Print on fabric, resin and mortar'),
     dimensions: '51 × 70 × 2,5 cm', photoCredit: 'Julia Thompson',
     images: [
       img('cavalo-2.jpg', W, H, 'Cavalo Duplo: dois cavalos sobrepostos em tons de verde e rosa, recortados na parede'),
@@ -39,7 +39,7 @@ export const docs = [
   {
     _id: 'artwork-opera-dos-leoes', _type: 'artwork',
     title: L('Ópera dos Leões'), slug: slug('opera-dos-leoes'), year: 2025, order: 1,
-    technique: L('Impressão sobre tecido, resina e argamassa', 'Print on fabric, resin and cement'),
+    technique: L('Impressão sobre tecido, resina e argamassa', 'Print on fabric, resin and mortar'),
     dimensions: '60 × 198 cm', photoCredit: 'Julia Thompson',
     images: [
       img('opera-3.jpg', W, H, 'Ópera dos Leões: sanefa de tecido com quatro máscaras de leão verdes penduradas'),

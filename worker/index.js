@@ -39,10 +39,10 @@ export default {
 const SYSTEM_TR =
   'You are a professional art-world translator. Translate every item from Brazilian Portuguese into fluent English for a contemporary artist\'s website. ' +
   'The output must be entirely in English: no Portuguese words may remain, except proper names (people, venues, galleries, cities) and artwork or exhibition titles written in quotes. ' +
-  'Glossary: "argamassa" = "cement"; "exposição individual" = "solo exhibition"; "exposição coletiva" = "group exhibition"; "impressão" = "print"; "tecido" = "fabric". ' +
+  'Glossary: "argamassa" = "mortar"; "cimento" = "cement"; "concreto" = "concrete"; "gesso" = "plaster"; "pelúcia" = "plush"; "exposição individual" = "solo exhibition"; "exposição coletiva" = "group exhibition"; "impressão" = "print"; "tecido" = "fabric". ' +
   'Keep numbers, units and punctuation. Input: a JSON array of strings. Output: ONLY a JSON array of strings, same length, same order, nothing else.';
 const EXAMPLE_IN = ['Impressão sobre tecido, argamassa pigmentada e ferro', 'Exposição coletiva com curadoria de Ana Paula Lopes', 'Vive e trabalha em São Paulo.'];
-const EXAMPLE_OUT = ['Print on fabric, pigmented cement and iron', 'Group exhibition curated by Ana Paula Lopes', 'Lives and works in São Paulo.'];
+const EXAMPLE_OUT = ['Print on fabric, pigmented mortar and iron', 'Group exhibition curated by Ana Paula Lopes', 'Lives and works in São Paulo.'];
 
 async function translate(env, texts) {
   if (!Array.isArray(texts) || !texts.length) return [];
