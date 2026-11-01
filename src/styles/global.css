@@ -38,6 +38,8 @@ ul { padding: 0; list-style: none; }
 /* ------------------------------------------------------------ escala tipográfica */
 .caps { font-size: 14px; letter-spacing: .08em; text-transform: uppercase; }
 .frame { font-size: 19px; letter-spacing: .08em; text-transform: uppercase; }
+/* menu e cantos: mesmo tamanho dos títulos das obras, mais delicados que o nome */
+.lang.frame, .menu.frame, .corner-br.frame, .opener-caption { font-size: 14px; letter-spacing: .08em; text-transform: uppercase; }
 .muted { color: var(--ink-2); }
 .label { color: var(--ink-3); font-size: 13px; }
 .ln { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
@@ -77,10 +79,11 @@ ul { padding: 0; list-style: none; }
 .is-open > .expand { grid-template-rows: 1fr; opacity: 1; }
 
 /* ------------------------------------------------------------ Obras: abertura + ziguezague */
-.opener { position: fixed; inset: 0; z-index: 0; background: var(--bg); }
+.opener { position: fixed; inset: 0; z-index: 0; background: var(--bg); transform-origin: 50% 55%; will-change: transform, opacity, filter; }
 .opener canvas { display: block; width: 100%; height: 100%; opacity: 0; transition: opacity 1.2s ease; }
 .opener-caption { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 15; white-space: nowrap; transition: opacity .6s; }
-.works { position: relative; z-index: 5; margin-top: 100vh; background: var(--bg); padding: 80px 12px 160px; min-height: 100vh; }
+/* sem linha: o fundo da vitrine começa transparente e vira branco ao longo de 45vh */
+.works { position: relative; z-index: 5; margin-top: 100vh; background: linear-gradient(to bottom, transparent 0, var(--bg) 45vh); padding: 22vh 12px 160px; min-height: 100vh; }
 .zz { position: relative; }
 .zz .tile { display: block; position: relative; }
 /* Tamanho padrão das capas: todas com a mesma altura-alvo (o menor entre 68% da coluna e 58% da tela);
@@ -95,6 +98,7 @@ ul { padding: 0; list-style: none; }
 .tile .cap { display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; }
 .tile:nth-child(even) .cap { flex-direction: row-reverse; }
 .tile .cap .yr { width: 60px; color: var(--ink-2); }
+.tile:nth-child(even) .cap .yr, .zz.is-random .tile .cap .yr { text-align: right; }   /* ano encostado na borda da foto */
 .tile .cap .sp { width: 60px; }
 .tile:nth-child(even) .cap { position: absolute; left: 0; right: 0; bottom: 100%; }
 /* modo aleatório: posições calculadas no script; transição FLIP */
@@ -150,6 +154,7 @@ ul { padding: 0; list-style: none; }
   .zz .tile { width: min(100%, calc(var(--r) * min(80vw, 56vh))); }
   .zz .tile + .tile { margin-top: 40px; }
   .tile .cap, .tile:nth-child(even) .cap { position: static; flex-direction: row-reverse; }
+  .tile .cap .yr { text-align: right; }
   .exh-preview { display: none; }
   .pub-row, .txt-row { grid-template-columns: 1fr auto; }
   .pub-row > :nth-child(3), .txt-row > :nth-child(2), .txt-row > :nth-child(4) { grid-column: 1 / -1; color: var(--ink-2); }
