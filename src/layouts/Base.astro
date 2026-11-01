@@ -35,6 +35,7 @@ const others = SECTIONS.filter(([k]) => k !== section);
 <html lang={lang === 'en' ? 'en' : 'pt-BR'}>
 <head>
   <meta charset="utf-8" />
+  <script is:inline>document.documentElement.classList.add('js')</script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>{fullTitle}</title>
   <meta name="description" content={desc} />
@@ -78,6 +79,13 @@ const others = SECTIONS.filter(([k]) => k !== section);
   </main>
 
   <script>
+    // Fotos entram com fade suave ao terminar de carregar (exceto as da galeria da obra, que já têm o próprio fade)
+    document.querySelectorAll('main img:not(.work-stage img)').forEach((img) => {
+      const show = () => img.classList.add('is-in');
+      img.classList.add('fade');
+      if (img.complete && img.naturalWidth) requestAnimationFrame(show);
+      else { img.addEventListener('load', show, { once: true }); img.addEventListener('error', show, { once: true }); }
+    });
     // Menu: no computador abre com o mouse (CSS); no toque, abre e fecha com um toque
     const menu = document.querySelector('.menu');
     const btn = document.querySelector('[data-menu-toggle]');

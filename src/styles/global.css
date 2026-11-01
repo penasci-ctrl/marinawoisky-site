@@ -162,6 +162,26 @@ ul { padding: 0; list-style: none; }
   .exh-list { max-width: none; }
 }
 
+/* ------------------------------------------------------------ transições entre páginas
+   Cross-fade lento entre páginas (View Transitions, Chrome/Edge/Safari; nos outros a troca é normal).
+   O conteúdo sai rápido e entra devagar, subindo 6 px; nome, idioma e menu ficam parados. */
+@view-transition { navigation: auto; }
+.site-name { view-transition-name: site-name; }
+.lang { view-transition-name: site-lang; }
+.menu { view-transition-name: site-menu; }
+::view-transition-group(site-name), ::view-transition-group(site-lang), ::view-transition-group(site-menu) { animation-duration: 0s; }
+::view-transition-old(root) { animation: vt-out .28s cubic-bezier(.4, 0, 1, 1) both; }
+::view-transition-new(root) { animation: vt-in .62s cubic-bezier(.2, .6, .2, 1) .08s both; }
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(6px); } }
+
+/* fotos aparecem com fade quando terminam de carregar (só com JS; sem JS ficam visíveis) */
+.js img.fade { opacity: 0; transition: opacity .7s ease; }
+.js img.fade.is-in { opacity: 1; }
+.tile .ph .alt.fade.is-in { opacity: 0; }          /* a 2ª vista continua escondida até o hover */
+.tile:hover .ph .alt.fade.is-in { opacity: 1; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: 0s !important; animation: none !important; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
