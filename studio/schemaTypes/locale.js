@@ -1,11 +1,13 @@
 import { defineType, defineField } from 'sanity'
+import { AltInput, LocaleInput } from '../ai'
 
 // Campos bilíngues: o português é obrigatório; se o inglês ficar vazio, o site mostra o português.
-const pair = (name, title, type, extra = {}) =>
+const pair = (name, title, type, extra = {}, components) =>
   defineType({
     name,
     title,
     type: 'object',
+    components,
     options: { columns: type === 'string' ? 2 : 1 },
     fields: [
       defineField({ name: 'pt', title: 'Português', type, validation: (r) => r.required(), ...extra }),
@@ -14,7 +16,7 @@ const pair = (name, title, type, extra = {}) =>
   })
 
 export const localeString = pair('localeString', 'Texto curto', 'string')
-export const localeText = pair('localeText', 'Texto', 'text', { rows: 3 })
+export const localeText = pair('localeText', 'Texto', 'text', { rows: 3 }, { input: LocaleInput })
 
 // Texto longo com parágrafos, itálico e links (bio, textos, texto de exposição)
 const richBlock = {
@@ -38,6 +40,7 @@ export const localeBlock = defineType({
   name: 'localeBlock',
   title: 'Texto longo',
   type: 'object',
+  components: { input: LocaleInput },
   fields: [
     defineField({ name: 'pt', title: 'Português', ...richBlock }),
     defineField({ name: 'en', title: 'English', ...richBlock }),
@@ -55,7 +58,8 @@ export const altImage = defineType({
       name: 'alt',
       title: 'Descrição da imagem (para quem não enxerga)',
       type: 'string',
-      validation: (r) => r.required().error('Descreva a imagem em uma frase.'),
+      components: { input: AltInput },
+      validation: (r) => r.required().error('Descreva a imagem em uma frase (ou clique em Gerar descrição).'),
     }),
     defineField({ name: 'caption', title: 'Legenda (opcional)', type: 'string' }),
   ],

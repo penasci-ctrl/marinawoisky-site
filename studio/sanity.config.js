@@ -3,6 +3,7 @@ import { structureTool } from 'sanity/structure'
 import { visionTool } from '@sanity/vision'
 import { schemaTypes, SINGLETONS } from './schemaTypes'
 import { structure } from './structure'
+import { AutoFillAction } from './ai'
 
 export default defineConfig({
   name: 'marinawoisky',
@@ -18,7 +19,7 @@ export default defineConfig({
   document: {
     actions: (actions, { schemaType }) =>
       SINGLETONS.includes(schemaType)
-        ? actions.filter(({ action }) => ['publish', 'discardChanges', 'restore'].includes(action))
-        : actions,
+        ? [...actions.filter(({ action }) => ['publish', 'discardChanges', 'restore'].includes(action)), AutoFillAction]
+        : [...actions, AutoFillAction],
   },
 })

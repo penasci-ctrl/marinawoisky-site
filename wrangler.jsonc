@@ -1,10 +1,14 @@
-// Cloudflare: o site é só arquivos estáticos gerados pelo Astro em dist/
+// Cloudflare Worker: arquivos estáticos do Astro (dist/) + rotas /api/* para o painel (tradução e descrição de imagem)
 {
   "name": "marinawoisky-site",
+  "main": "worker/index.js",
   "compatibility_date": "2026-10-01",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     "not_found_handling": "404-page",
-    "html_handling": "auto-trailing-slash"
-  }
+    "html_handling": "auto-trailing-slash",
+    "run_worker_first": ["/api/*"]
+  },
+  "ai": { "binding": "AI" }
 }
