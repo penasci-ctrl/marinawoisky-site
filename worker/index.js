@@ -80,24 +80,22 @@ async function translate(env, texts) {
   throw new Error('A tradução falhou. Tente de novo em alguns segundos.');
 }
 
-// Monta a instrução com o contexto do item (obra, exposição ou publicação)
-function altPrompt(ctx) {
-  const clean = (v) => String(v || '').trim().slice(0, 200);
-  const title = clean(ctx.title), year = clean(ctx.year), tech = clean(ctx.technique), place = clean(ctx.venue), outlet = clean(ctx.outlet);
-  const base =
-    'Você escreve textos alternativos (alt text) para o site da artista brasileira Marina Woisky. ' +
-    'Ela faz relevos e esculturas a partir de imagens impressas em tecido, preenchidas com argamassa, cimento, resina, gesso etc.: bichos e ornamentos distorcidos, entre o plano e o volume. ' +
-    'Escreva UMA frase em português do Brasil, com no máximo 30 palavras, sem aspas, sem "imagem de" ou "foto de". ' +
-    'Diga primeiro que vista é (frontal, lateral, detalhe, vista de cima, vista da instalação, obra na parede), depois o que se vê: bichos ou formas, cores, textura, como a obra ocupa o espaço. ' +
-    'Não interprete nem elogie; descreva.';
-  if (ctx.kind === 'exhibition')
-    return base + ` A foto é da exposição "${title}"${year ? ` (${year})` : ''}${place ? `, em ${place}` : ''}. Comece com "Vista da exposição ${title}${place ? ` em ${place}` : ''}," e diga quais obras ou objetos aparecem e como estão dispostos.`;
-  if (ctx.kind === 'publication')
-    return base + ` A foto é de uma publicação: "${title}"${outlet ? ` (${outlet})` : ''}${year ? `, ${year}` : ''}. Comece com "Páginas de ${title}," e diga o que aparece nas páginas (obras reproduzidas, texto, layout).`;
-  if (ctx.kind === 'artwork' && title)
-    return base + ` A foto é da obra "${title}"${year ? ` (${year})` : ''}${tech ? `, técnica: ${tech}` : ''}. ` +
-      `Comece assim: "[Tipo de vista] de ${title}${year ? ` (${year})` : ''}, de Marina Woisky:" e em seguida descreva o que se vê, usando os materiais da técnica quando fizer sentido (ex.: superfície de argamassa, tecido impresso, brilho da resina).`;
-  return base;
+// Descrição em duas etapas:
+// 1) o modelo de visão só OLHA a foto e descreve em inglês o que é visível (sem nenhum contexto, para não inventar);
+// 2) o modelo de texto escreve o alt em português juntando essa descrição com o contexto do item.
+const LOOK_PROMPT =
+  'Describe exactly what is visible in this photo, in 2 or 3 plain sentences. ' +
+  'Say what kind of photo it is (an object photographed against a wall, a room with objects, a book or printed pages, a close-up detail, etc.), ' +
+  'what the main subject looks like (shapes, figures, animals, text, colours, surfaces) and its viewpoint (front, side, angle, from above). ' +
+  'If there is readable large text, quote it. Do not guess anything you cannot see.';
+
+function contextLine(ctx) {
+  const c = (v) => String(v || '').trim().slice(0, 200);
+  const title = c(ctx.title), year = c(ctx.year);
+  if (ctx.kind === 'artwork') return `Item: obra de arte "${title}"${year ? ` (${year})` : ''} de Marina Woisky${ctx.technique ? `; técnica: ${c(ctx.technique)}` : ''}. Formato: "[tipo de vista] de ${title}${year ? ` (${year})` : ''}, de Marina Woisky: [o que se vê]".`;
+  if (ctx.kind === 'exhibition') return `Item: exposição "${title}"${year ? ` (${year})` : ''}${ctx.venue ? `, em ${c(ctx.venue)}` : ''}, com obras de Marina Woisky. Formato: "Vista da exposição ${title}${ctx.venue ? ` em ${c(ctx.venue)}` : ''}: [o que se vê]".`;
+  if (ctx.kind === 'publication') return `Item: publicação "${title}"${ctx.outlet ? ` (${c(ctx.outlet)})` : ''}${year ? `, ${year}` : ''}, em que Marina Woisky aparece. Formato: "[Capa / Páginas / Exemplar] de ${title}: [o que se vê]".`;
+  return `Item: imagem do site da artista Marina Woisky${title ? ` ("${title}")` : ''}.`;
 }
 
 async function describe(env, src, ctx = {}) {
@@ -108,23 +106,36 @@ async function describe(env, src, ctx = {}) {
   let bin = '';
   for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
   const image = `data:image/jpeg;base64,${btoa(bin)}`;
-  const input = {
-    messages: [
-      { role: 'system', content: altPrompt(ctx) },
-      { role: 'user', content: 'Escreva o texto alternativo desta foto.' },
-    ],
-    image,
-    max_tokens: 160,
-    temperature: 0.2,
-  };
-  let out;
+
+  // 1) olhar
+  const look = { messages: [{ role: 'user', content: LOOK_PROMPT }], image, max_tokens: 200, temperature: 0 };
+  let seen;
   try {
-    out = await env.AI.run(VISION_MODEL, input);
+    seen = await env.AI.run(VISION_MODEL, look);
   } catch (e) {
     // Na primeira vez a Cloudflare pede para aceitar a licença do modelo da Meta.
     if (!/agree|license/i.test(String(e?.message || e))) throw e;
     await env.AI.run(VISION_MODEL, { prompt: 'agree' });
-    out = await env.AI.run(VISION_MODEL, input);
+    seen = await env.AI.run(VISION_MODEL, look);
   }
+  const visual = String(seen.response || '').trim();
+  if (!visual) throw new Error('A IA não conseguiu ler a foto. Tente de novo.');
+
+  // 2) escrever
+  const out = await env.AI.run(TEXT_MODEL, {
+    messages: [
+      {
+        role: 'system',
+        content:
+          'Você escreve textos alternativos (alt text) em português do Brasil para o site da artista Marina Woisky. ' +
+          'Use SOMENTE o que está na descrição visual para dizer o que aparece na foto; o contexto serve só para nomear o item. ' +
+          'Não invente materiais, bichos ou cores que a descrição visual não menciona. Se for uma obra, pode usar os materiais da técnica para nomear superfícies que a descrição mostra. ' +
+          'Uma frase, no máximo 30 palavras, sem aspas, sem "imagem de"/"foto de", sem interpretar ou elogiar. Responda só com a frase.',
+      },
+      { role: 'user', content: `${contextLine(ctx)}\n\nDescrição visual (em inglês, feita por quem viu a foto):\n${visual}` },
+    ],
+    max_tokens: 120,
+    temperature: 0.2,
+  });
   return String(out.response || '').trim().replace(/^["“]|["”]$/g, '').replace(/\s+/g, ' ');
 }
