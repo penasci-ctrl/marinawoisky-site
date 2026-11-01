@@ -1,0 +1,10 @@
+// Cloudflare: o site é só arquivos estáticos gerados pelo Astro em dist/
+{
+  "name": "marinawoisky-site",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  }
+}

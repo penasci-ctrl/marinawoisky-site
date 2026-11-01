@@ -4,7 +4,7 @@
 import { createClient } from '@sanity/client';
 import { docs as seedDocs } from '../data/seed.mjs';
 
-const projectId = import.meta.env.SANITY_PROJECT_ID || process.env.SANITY_PROJECT_ID;
+const projectId = (import.meta.env.USE_SEED || process.env.USE_SEED) ? '' : (import.meta.env.SANITY_PROJECT_ID || process.env.SANITY_PROJECT_ID || 'wqz875em');
 const dataset = import.meta.env.SANITY_DATASET || process.env.SANITY_DATASET || 'production';
 
 const IMG = `{ "src": asset->url, "w": asset->metadata.dimensions.width, "h": asset->metadata.dimensions.height, alt, caption }`;
