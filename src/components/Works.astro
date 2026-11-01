@@ -1,0 +1,154 @@
+---
+import Base from '../layouts/Base.astro';
+import { getContent } from '../lib/content.js';
+import { UI, href, t, langPaths } from '../lib/i18n.js';
+import { imgUrl, srcset, ratio } from '../lib/img.js';
+
+
+// opener: true na home (abertura 3D); false em /obras (vai direto às obras)
+const { lang, opener = true, path = '/' } = Astro.props;
+const ui = UI[lang];
+const { works, settings } = await getContent();
+const opening = settings?.opening || {};
+const openingWork = opening.work;
+const hasModel = opener && !!opening.web;
+const tiles = works.filter((w) => w.images?.length);
+---
+<Base lang={lang} section="works" path={path} intro={hasModel}>
+  {hasModel && (
+    <div class="opener" aria-hidden="true">
+      <canvas data-opener data-web={opening.web} data-mobile={opening.mobile}></canvas>
+    </div>
+  )}
+  {hasModel && openingWork && (
+    <a class="opener-caption dif" href={href(lang, `/obras/${openingWork.slug}`)} data-opener-caption>
+      {t(openingWork.title, lang)}, {openingWork.year}
+    </a>
+  )}
+
+  <section class="works" style={hasModel ? undefined : 'margin-top: 0; padding-top: 96px'}>
+    <h1 class="sr-only">{ui.works}</h1>
+    <div class="zz" data-zz>
+      {tiles.map((w, i) => {
+        const cover = w.images[0];
+        const hover = w.images[1];
+        const title = t(w.title, lang);
+        return (
+          <a class="tile" href={href(lang, `/obras/${w.slug}`)} style={`--r:${ratio(cover)}`} data-ratio={ratio(cover)}>
+            <span class="ph">
+              <img src={imgUrl(cover, 1200)} srcset={srcset(cover)} sizes="(max-width: 800px) 100vw, 50vw" alt={cover.alt || title} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" width={cover.w} height={cover.h} />
+              {hover && <img class="alt" src={imgUrl(hover, 1200)} srcset={srcset(hover)} sizes="50vw" alt="" loading="lazy" decoding="async" />}
+            </span>
+            <span class="cap">
+              <span class="yr">{w.year}</span>
+              <span class="caps">{title}</span>
+              <span class="sp"></span>
+            </span>
+          </a>
+        );
+      })}
+    </div>
+    <p class="end-glyph" style="text-align: center" aria-hidden="true">❦</p>
+  </section>
+
+  <div class="corner-br frame dif chrome" role="group" aria-label={`${ui.chrono} / ${ui.random}`}>
+    <button type="button" data-mode="chrono" aria-pressed="true">{ui.chrono}</button>
+    <button type="button" data-mode="random" aria-pressed="false">{ui.random}</button>
+  </div>
+
+  <style>
+    .corner-br button { opacity: .6; min-height: 36px; transition: opacity .3s; }
+    .corner-br button[aria-pressed='true'] { opacity: 1; }
+  </style>
+
+  <script>
+    // ---- Abertura 3D: carrega o three.js só se houver modelo
+    const canvas = document.querySelector('[data-opener]');
+    if (canvas) {
+      import('../lib/opener.js').then(({ mountOpener }) =>
+        mountOpener(canvas, { web: canvas.dataset.web, mobile: canvas.dataset.mobile })
+      );
+      // Ao rolar: a cortina de obras sobe, a escultura some e a moldura aparece
+      const opener = canvas.parentElement;
+      const caption = document.querySelector('[data-opener-caption]');
+      const onScroll = () => {
+        const y = scrollY, h = innerHeight;
+        opener.style.opacity = String(Math.max(0, 1 - y / h));
+        if (caption) caption.style.opacity = y > 40 ? '0' : '1';
+        document.body.classList.toggle('is-intro', y < h * 0.4);
+      };
+      addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    }
+
+    // ---- Cronológico / Aleatório (com transição FLIP: as obras deslizam até o novo lugar)
+    const zz = document.querySelector('[data-zz]');
+    const btns = document.querySelectorAll('[data-mode]');
+    const tiles = zz ? [...zz.querySelectorAll('.tile')] : [];
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function layoutRandom() {
+      // larguras sorteadas, posição horizontal em degraus de 40 px e nenhuma obra cobrindo outra
+      const W = zz.clientWidth;
+      const mobile = W < 700;
+      const widths = mobile ? [0.62, 0.78, 0.9] : [0.24, 0.32, 0.42];
+      const placed = [];
+      let y = 0;
+      tiles.forEach((el) => {
+        const r = Number(el.dataset.ratio);
+        const w = Math.min(widths[Math.floor(Math.random() * widths.length)] * W, r * innerHeight * 0.5); // nenhuma obra mais alta que meia tela
+        const h = w / Number(el.dataset.ratio) + 36;
+        const x = Math.round((Math.random() * (W - w)) / 40) * 40;
+        y += 40 * Math.floor(Math.random() * 3);
+        const hits = (yy) => placed.some((r) => x < r.x + r.w + 24 && x + w + 24 > r.x && yy < r.y + r.h + 24 && yy + h + 24 > r.y);
+        while (hits(y)) y += 40;
+        placed.push({ x, y, w, h });
+        el.style.setProperty('--x', `${x}px`);
+        el.style.setProperty('--y', `${y}px`);
+        el.style.setProperty('--w', `${w}px`);
+      });
+      const bottom = Math.max(0, ...placed.map((r) => r.y + r.h));
+      zz.style.setProperty('--zz-h', `${bottom + 80}px`);
+    }
+
+    function setMode(mode) {
+      const first = tiles.map((el) => el.getBoundingClientRect());
+      zz.classList.toggle('is-random', mode === 'random');
+      if (mode === 'random') layoutRandom(); else fitZigzag();
+      btns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+      if (reduce) return;
+      tiles.forEach((el, i) => {
+        const last = el.getBoundingClientRect();
+        const dx = first[i].left - last.left, dy = first[i].top - last.top, s = first[i].width / last.width;
+        el.animate(
+          [{ transform: `translate(${dx}px, ${dy}px) scale(${s})`, transformOrigin: 'top left' }, { transform: 'none', transformOrigin: 'top left' }],
+          { duration: 1000, easing: 'cubic-bezier(.8,0,.2,1)' }
+        );
+      });
+    }
+    // ---- Ziguezague: cada obra sobe até 45% da anterior, mas nunca encosta na obra (e legenda) da mesma coluna
+    function fitZigzag() {
+      if (!zz) return;
+      const desk = innerWidth > 800 && !zz.classList.contains('is-random');
+      tiles.forEach((el) => (el.style.marginTop = ''));
+      if (!desk) return;
+      const GAP = 56;
+      tiles.forEach((el, i) => {
+        if (i === 0) return;
+        el.style.marginTop = '0px';
+        const prev = tiles[i - 1];
+        const prevBottom = prev.offsetTop + prev.offsetHeight;
+        const sameCol = tiles[i - 2];
+        const limit = sameCol ? prevBottom - (sameCol.offsetTop + sameCol.offsetHeight) - GAP : Infinity;
+        const pull = Math.max(0, Math.min(prev.offsetHeight * 0.45, limit));
+        el.style.marginTop = `${-pull}px`;
+      });
+    }
+    fitZigzag();
+    addEventListener('load', fitZigzag);
+    document.fonts?.ready.then(fitZigzag);
+
+    btns.forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
+    addEventListener('resize', () => { if (zz?.classList.contains('is-random')) layoutRandom(); else fitZigzag(); });
+  </script>
+</Base>

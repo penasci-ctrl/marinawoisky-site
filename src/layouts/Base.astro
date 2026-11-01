@@ -22,7 +22,7 @@ const altPt = new URL(href('pt', path), Astro.site).href;
 const altEn = new URL(href('en', path), Astro.site).href;
 
 const SECTIONS = [
-  ['works', '/'],
+  ['works', '/obras'],
   ['exhibitions', '/exposicoes'],
   ['publications', '/publicacoes'],
   ['texts', '/textos'],
@@ -66,7 +66,7 @@ const others = SECTIONS.filter(([k]) => k !== section);
 
   <nav class="menu frame dif chrome" aria-label={ui.menu}>
     {current && (
-      <button class="menu-current" type="button" aria-expanded="false" data-menu-toggle>{ui[current[0]]}</button>
+      <a class="menu-current" href={href(lang, current[1])} aria-expanded="false" data-menu-toggle>{ui[current[0]]}</a>
     )}
     <ul>
       {others.map(([k, p]) => <li><a href={href(lang, p)}>{ui[k]}</a></li>)}
@@ -82,8 +82,13 @@ const others = SECTIONS.filter(([k]) => k !== section);
     const menu = document.querySelector('.menu');
     const btn = document.querySelector('[data-menu-toggle]');
     if (menu && btn) {
-      btn.addEventListener('click', () => {
-        if (matchMedia('(hover: hover)').matches) return;
+      btn.addEventListener('click', (e) => {
+        // no computador, o item atual é um link para o começo da seção (ex.: Obras, vindo de uma obra)
+        if (matchMedia('(hover: hover)').matches) {
+          if (location.pathname === btn.getAttribute('href')) { e.preventDefault(); scrollTo({ top: 0, behavior: 'smooth' }); }
+          return;
+        }
+        e.preventDefault();
         const open = menu.classList.toggle('is-open');
         btn.setAttribute('aria-expanded', String(open));
       });

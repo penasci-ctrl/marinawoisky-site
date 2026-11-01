@@ -1,0 +1,8 @@
+---
+// Obras sem a abertura 3D (link "Obras" do menu)
+import Works from '../../../components/Works.astro';
+import { langPaths } from '../../../lib/i18n.js';
+export function getStaticPaths() { return langPaths(); }
+const { lang } = Astro.props;
+---
+<Works lang={lang} opener={false} path="/obras" />
