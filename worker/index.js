@@ -28,7 +28,7 @@ export default {
     try {
       const body = await request.json();
       if (url.pathname === '/api/translate') return json({ texts: await translate(env, body.texts) }, origin);
-      if (url.pathname === '/api/describe') return json({ alt: await describe(env, body.url) }, origin);
+      if (url.pathname === '/api/describe') return json({ alt: await describe(env, body.url, body.context || {}) }, origin);
       return json({ error: 'not found' }, origin, 404);
     } catch (e) {
       return json({ error: String(e?.message || e) }, origin, 500);
@@ -80,7 +80,27 @@ async function translate(env, texts) {
   throw new Error('A tradução falhou. Tente de novo em alguns segundos.');
 }
 
-async function describe(env, src) {
+// Monta a instrução com o contexto do item (obra, exposição ou publicação)
+function altPrompt(ctx) {
+  const clean = (v) => String(v || '').trim().slice(0, 200);
+  const title = clean(ctx.title), year = clean(ctx.year), tech = clean(ctx.technique), place = clean(ctx.venue), outlet = clean(ctx.outlet);
+  const base =
+    'Você escreve textos alternativos (alt text) para o site da artista brasileira Marina Woisky. ' +
+    'Ela faz relevos e esculturas a partir de imagens impressas em tecido, preenchidas com argamassa, cimento, resina, gesso etc.: bichos e ornamentos distorcidos, entre o plano e o volume. ' +
+    'Escreva UMA frase em português do Brasil, com no máximo 30 palavras, sem aspas, sem "imagem de" ou "foto de". ' +
+    'Diga primeiro que vista é (frontal, lateral, detalhe, vista de cima, vista da instalação, obra na parede), depois o que se vê: bichos ou formas, cores, textura, como a obra ocupa o espaço. ' +
+    'Não interprete nem elogie; descreva.';
+  if (ctx.kind === 'exhibition')
+    return base + ` A foto é da exposição "${title}"${year ? ` (${year})` : ''}${place ? `, em ${place}` : ''}. Comece com "Vista da exposição ${title}${place ? ` em ${place}` : ''}," e diga quais obras ou objetos aparecem e como estão dispostos.`;
+  if (ctx.kind === 'publication')
+    return base + ` A foto é de uma publicação: "${title}"${outlet ? ` (${outlet})` : ''}${year ? `, ${year}` : ''}. Comece com "Páginas de ${title}," e diga o que aparece nas páginas (obras reproduzidas, texto, layout).`;
+  if (ctx.kind === 'artwork' && title)
+    return base + ` A foto é da obra "${title}"${year ? ` (${year})` : ''}${tech ? `, técnica: ${tech}` : ''}. ` +
+      `Comece assim: "[Tipo de vista] de ${title}${year ? ` (${year})` : ''}, de Marina Woisky:" e em seguida descreva o que se vê, usando os materiais da técnica quando fizer sentido (ex.: superfície de argamassa, tecido impresso, brilho da resina).`;
+  return base;
+}
+
+async function describe(env, src, ctx = {}) {
   if (!/^https:\/\/cdn\.sanity\.io\/images\//.test(src || '')) throw new Error('Imagem inválida.');
   const img = await fetch(`${src}?w=768&fm=jpg&q=80`);
   if (!img.ok) throw new Error('Não consegui abrir a imagem.');
@@ -90,17 +110,12 @@ async function describe(env, src) {
   const image = `data:image/jpeg;base64,${btoa(bin)}`;
   const input = {
     messages: [
-      {
-        role: 'system',
-        content:
-          'You write alt text for photos of artworks and exhibitions on an artist\'s website. ' +
-          'One sentence in Brazilian Portuguese, at most 25 words, describing what is visible: form, material appearance, colours, setting. ' +
-          'No interpretation, no "imagem de", no quotes.',
-      },
-      { role: 'user', content: 'Descreva esta imagem.' },
+      { role: 'system', content: altPrompt(ctx) },
+      { role: 'user', content: 'Escreva o texto alternativo desta foto.' },
     ],
     image,
-    max_tokens: 120,
+    max_tokens: 160,
+    temperature: 0.2,
   };
   let out;
   try {
@@ -111,5 +126,5 @@ async function describe(env, src) {
     await env.AI.run(VISION_MODEL, { prompt: 'agree' });
     out = await env.AI.run(VISION_MODEL, input);
   }
-  return String(out.response || '').trim().replace(/^["“]|["”]$/g, '');
+  return String(out.response || '').trim().replace(/^["“]|["”]$/g, '').replace(/\s+/g, ' ');
 }

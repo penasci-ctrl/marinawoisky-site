@@ -20,7 +20,16 @@ export const assetUrl = (ref) => {
   const m = /^image-([a-f0-9]+)-(\d+x\d+)-(\w+)$/.exec(ref || '')
   return m ? `https://cdn.sanity.io/images/${PROJECT}/${DATASET}/${m[1]}-${m[2]}.${m[3]}` : null
 }
-export const describeImage = async (ref) => (await post('describe', { url: assetUrl(ref) })).alt
+// Contexto que vai junto com a foto, para a descrição citar obra, ano e técnica
+export const contextOf = (doc) => ({
+  kind: doc?._type,
+  title: doc?.title?.pt,
+  year: doc?.year,
+  technique: doc?.technique?.pt,
+  venue: doc?.venue,
+  outlet: doc?.outlet,
+})
+export const describeImage = async (ref, context = {}) => (await post('describe', { url: assetUrl(ref), context })).alt
 
 const isEmpty = (v) => v == null || (typeof v === 'string' && !v.trim()) || (Array.isArray(v) && v.length === 0)
 const seg = (arr, i) => (arr[i] && arr[i]._key ? `[_key=="${arr[i]._key}"]` : `[${i}]`)
@@ -70,7 +79,7 @@ export function AutoFillAction(props) {
         if (typeof f.pt === 'string') sets[f.path] = tr[k++]
         else sets[f.path] = f.pt.map((b) => ({ ...b, children: (b.children || []).map((c) => ({ ...c, text: tr[k++] })) }))
       }
-      for (const f of found.images) sets[f.path] = await describeImage(f.ref)
+      for (const f of found.images) sets[f.path] = await describeImage(f.ref, contextOf(doc))
       patch.execute([{ set: sets }])
       setMsg(`Pronto: ${found.locale.length} campo(s) traduzido(s) e ${found.images.length} foto(s) descrita(s). Confira e clique em Publish.`)
     } catch (e) {
@@ -92,12 +101,13 @@ export function AutoFillAction(props) {
 // Campo "Descrição da imagem" com botão "Gerar descrição"
 export function AltInput(props) {
   const image = useFormValue(props.path.slice(0, -1))
+  const doc = useFormValue([])
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState(null)
   const ref = image?.asset?._ref
   const gen = async () => {
     setBusy(true); setErr(null)
-    try { props.onChange(set(await describeImage(ref))) } catch (e) { setErr(e.message) } finally { setBusy(false) }
+    try { props.onChange(set(await describeImage(ref, contextOf(doc)))) } catch (e) { setErr(e.message) } finally { setBusy(false) }
   }
   return (
     <Stack space={2}>
