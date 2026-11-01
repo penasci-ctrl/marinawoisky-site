@@ -17,7 +17,7 @@ export const exhibition = defineType({
     defineField({ name: 'year', title: 'Ano', type: 'number', validation: (r) => r.required().integer() }),
     defineField({ name: 'venue', title: 'Local', description: 'Ex.: Millan', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'city', title: 'Cidade, país', type: 'localeString' }),
-    defineField({ name: 'note', title: 'Observação', description: 'Ex.: com Julia Gallo; cur. Yudi Rafael', type: 'localeString' }),
+    defineField({ name: 'note', title: 'Observação', description: 'Ex.: com Julia Gallo; curado por Yudi Rafael', type: 'localeString' }),
     defineField({ name: 'startDate', title: 'Abertura', type: 'date' }),
     defineField({ name: 'endDate', title: 'Encerramento', type: 'date' }),
     defineField({

@@ -49,7 +49,7 @@ export const docs = [
   },
 
   // ---------------------------------------------------------------- Exposições
-  { _id: 'exh-ecos-e-miragens', _type: 'exhibition', title: L('Ecos e Miragens', 'Echoes and Mirages'), slug: slug('ecos-e-miragens'), kind: 'group', year: 2025, venue: 'Almeida & Dale', city: L('São Paulo, Brasil', 'São Paulo, Brazil'), note: L('cur. Yudi Rafael e Carlos Quijon', 'cur. Yudi Rafael and Carlos Quijon') },
+  { _id: 'exh-ecos-e-miragens', _type: 'exhibition', title: L('Ecos e Miragens', 'Echoes and Mirages'), slug: slug('ecos-e-miragens'), kind: 'group', year: 2025, venue: 'Almeida & Dale', city: L('São Paulo, Brasil', 'São Paulo, Brazil'), note: L('curado por Yudi Rafael e Carlos Quijon', 'curated by Yudi Rafael and Carlos Quijon') },
   { _id: 'exh-till-the-cows', _type: 'exhibition', title: L('Till the Cows Come Home'), slug: slug('till-the-cows-come-home'), kind: 'group', year: 2025, venue: 'Banquet Gallery', city: L('Milão, Itália', 'Milan, Italy') },
   {
     _id: 'exh-through-the-garden-bars', _type: 'exhibition', title: L('Through the Garden Bars'), slug: slug('through-the-garden-bars'), kind: 'solo', year: 2024, venue: 'L.U.P.O.', city: L('Milão, Itália', 'Milan, Italy'),
@@ -61,7 +61,7 @@ export const docs = [
     text: { pt: [p('[Texto da exposição.]')] },
   },
   {
-    _id: 'exh-panorama-mil-graus', _type: 'exhibition', title: L('38º Panorama da Arte Brasileira: Mil graus', '38th Panorama of Brazilian Art: Mil graus'), slug: slug('panorama-mil-graus'), kind: 'group', year: 2024, venue: 'MAM São Paulo, no MAC USP', city: L('São Paulo, Brasil', 'São Paulo, Brazil'), note: L('cur. Germano Dushá e Thiago de Paula Souza', 'cur. Germano Dushá and Thiago de Paula Souza'),
+    _id: 'exh-panorama-mil-graus', _type: 'exhibition', title: L('38º Panorama da Arte Brasileira: Mil graus', '38th Panorama of Brazilian Art: Mil graus'), slug: slug('panorama-mil-graus'), kind: 'group', year: 2024, venue: 'MAM São Paulo, no MAC USP', city: L('São Paulo, Brasil', 'São Paulo, Brazil'), note: L('curado por Germano Dushá e Thiago de Paula Souza', 'curated by Germano Dushá and Thiago de Paula Souza'),
     images: [
       img('panorama-3.jpg', W, H, 'Vista da instalação de Marina Woisky no 38º Panorama, com aves e figuras sobre o piso branco'),
       img('panorama-1.jpg', W, H, 'Esculturas de aves e figuras na sala do Panorama'),
@@ -116,8 +116,8 @@ export const docs = [
         ['2023', 'Pedras e bichos d’água, Millan, São Paulo', 'Water Stones and Creatures, Millan, São Paulo'],
       ]],
       ['Coletivas', 'Group exhibitions', [
-        ['2026', 'O Drama da Forma, cur. Rita Vênus, Claraboia, São Paulo'], ['', 'Falácia Natural, Galeria Refresco, Rio de Janeiro'],
-        ['2025', 'Ecos e Miragens, cur. Yudi Rafael e Carlos Quijon, Almeida & Dale, São Paulo'], ['', '38º Panorama da Arte Brasileira: Mil graus, Sesc Campinas'], ['', 'Till the Cows Come Home, Banquet Gallery, Milão', 'Till the Cows Come Home, Banquet Gallery, Milan'],
+        ['2026', 'O Drama da Forma, curado por Rita Vênus, Claraboia, São Paulo'], ['', 'Falácia Natural, Galeria Refresco, Rio de Janeiro'],
+        ['2025', 'Ecos e Miragens, curado por Yudi Rafael e Carlos Quijon, Almeida & Dale, São Paulo'], ['', '38º Panorama da Arte Brasileira: Mil graus, Sesc Campinas'], ['', 'Till the Cows Come Home, Banquet Gallery, Milão', 'Till the Cows Come Home, Banquet Gallery, Milan'],
         ['2024', '38º Panorama da Arte Brasileira: Mil graus, MAM São Paulo'], ['', 'VRUMMM, Millan, São Paulo'], ['', 'Porvir, Gruta, São Paulo'], ['', 'Areoporto, São Paulo'],
         ['2023', 'Still Life/Still Living, Olhão e Lamb Gallery'], ['', 'Paura, Era Gallery, Milão', 'Paura, Era Gallery, Milan'], ['', 'Contra-Flecha, Almeida & Dale, São Paulo'],
         ['2022', 'Desmanchar, Desfaz, Quadra'], ['', 'Atlas nº 4, Massapê Projetos'], ['', 'Sobre monstros, Lona Galeria'], ['', 'Abre Alas 17, A Gentil Carioca, Rio de Janeiro'], ['', 'Ato, 25M'],
