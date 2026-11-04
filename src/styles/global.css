@@ -1,13 +1,13 @@
 /* Sistema visual — Marina Woisky
-   Rosarivo (títulos, nome, menu — caixa alta) + Lato Light (texto), as fontes do portfólio · branco #FBFBFA · tamanhos: 19 moldura / 14 títulos / 16 texto / 17 leitura / 13 rótulos */
+   Rosarivo em tudo (fonte do portfólio) · todo texto em negativo (mix-blend difference) · preto suave #222 · branco #FBFBFA · tamanhos: 19 moldura / 14 títulos / 16 texto / 17 leitura / 13 rótulos */
 :root {
   --bg: #fbfbfa;
-  --ink: #0d0d0e;
+  --ink: #222222;       /* preto suave, nunca puro */
   --ink-2: #45484b;     /* anos, locais, rótulos de seção */
   --ink-3: #6e7174;     /* rótulos de ficha, créditos */
   --rule: #9c9c99;      /* glifos, sublinhados pontilhados */
-  --font: 'Lato', 'Helvetica Neue', Arial, sans-serif;            /* texto, dados, legendas */
-  --serif: 'Rosarivo', Georgia, 'Times New Roman', serif;          /* nome, menu, títulos em caixa alta */
+  --font: 'Rosarivo', Georgia, 'Times New Roman', serif;
+  --serif: var(--font);
   --glyph: 'Noto Sans Symbols 2', 'Segoe UI Symbol', serif;
   --edge: 20px;                         /* margem dos cantos */
   --col: clamp(20px, 24.7vw, 316px);    /* início da coluna de conteúdo */
@@ -22,7 +22,7 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font);
-  font-weight: 300;
+  font-weight: 400;
   font-size: 16px;
   line-height: 1.35;
   -webkit-font-smoothing: antialiased;
@@ -50,8 +50,18 @@ ul { padding: 0; list-style: none; }
 .end-glyph { font-family: var(--glyph); font-style: normal; font-size: 12px; color: var(--rule); padding: 40px 0 0; }
 
 /* ------------------------------------------------------------ moldura fixa (modo diferença) */
-.dif { mix-blend-mode: difference; color: #fff; }
-.dif a, .dif button { color: #fff; }
+/* Negativo: o texto é desenhado com mix-blend difference. A cor "clara" de cada token é o fundo menos a tinta
+   desejada, então sobre o branco o resultado é exatamente --ink / --ink-2 / --ink-3; sobre imagens, inverte. */
+/* (blocos dentro de um elemento já em negativo ficam de fora: o grupo inteiro já se mescla) */
+.dif, main :is(h1, h2, h3, p, dl, figcaption, blockquote, .cap, .row, .filters, .lab, .label, .cv-list, .about > div, .work-info):not(:has(img, canvas)):not(.work-info *, .dif *) {
+  mix-blend-mode: difference;
+  --ink: #d9d9d8;      /* → #222 sobre o fundo */
+  --ink-2: #b6b3af;    /* → #45484b */
+  --ink-3: #8d8a86;    /* → #6e7174 */
+  --rule: #5f5f61;     /* → #9c9c99 */
+  color: var(--ink);
+}
+.dif a, .dif button { color: var(--ink); }
 .site-name { position: fixed; z-index: 20; top: 18px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
 .lang { position: fixed; z-index: 20; top: 18px; right: var(--edge); display: flex; gap: 6px; }
 .lang [aria-current='false'] { opacity: .6; }
@@ -158,6 +168,10 @@ ul { padding: 0; list-style: none; }
   .zz .tile + .tile { margin-top: 40px; }
   .tile .cap, .tile:nth-child(even) .cap { position: static; flex-direction: row-reverse; }
   .tile .cap .yr { text-align: right; }
+  /* aleatório no celular: só a ordem é sorteada; as obras ficam empilhadas, centralizadas e proporcionais */
+  .zz.is-random { min-height: 0; }
+  .zz.is-random .tile { position: relative; left: auto; top: auto; width: var(--tw); margin: 40px auto 0 !important; }
+  .zz.is-random .tile:first-child { margin-top: 0 !important; }
   .exh-preview { display: none; }
   .pub-row, .txt-row { grid-template-columns: 1fr auto; }
   .pub-row > :nth-child(3), .txt-row > :nth-child(2), .txt-row > :nth-child(4) { grid-column: 1 / -1; color: var(--ink-2); }
@@ -175,8 +189,6 @@ ul { padding: 0; list-style: none; }
   body::before { top: 0; height: calc(48px + env(safe-area-inset-top, 0px)); }
   body::after { bottom: 0; height: calc(60px + env(safe-area-inset-bottom, 0px)); }
   body.is-intro::before, body.is-intro::after { background: transparent; }
-  body:not(.is-intro) .dif { mix-blend-mode: normal; color: var(--ink); }
-  body:not(.is-intro) .dif a, body:not(.is-intro) .dif button { color: var(--ink); }
   .site-name { top: calc(14px + env(safe-area-inset-top, 0px)); font-size: 15px; }
   .lang { top: calc(16px + env(safe-area-inset-top, 0px)); }
   .menu { bottom: calc(14px + env(safe-area-inset-bottom, 0px)); left: var(--edge); }

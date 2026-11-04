@@ -47,7 +47,7 @@ const shows = (work.exhibitions || []).filter(Boolean);
     </aside>
   </article>
 
-  <div class="corner-br frame">
+  <div class="corner-br frame dif">
     {n > 1 && <span class="work-counter" style="font-size: 16px; letter-spacing: 0; text-transform: none" data-counter>1 / {n}</span>}
     <a href={href(lang, `/obras/${next.slug}`)}>{ui.next}</a>
   </div>

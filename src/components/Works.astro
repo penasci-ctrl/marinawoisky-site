@@ -115,13 +115,14 @@ const tiles = works.filter((w) => w.images?.length);
       // Embaralha tudo: a ordem das obras (inclusive no HTML, para o teclado seguir a nova ordem),
       // os tamanhos e as posições. Cada clique em "Aleatório" sorteia de novo.
       const W = zz.clientWidth;
-      const mobile = W < 700;
+      const mobile = innerWidth <= 800;
       const shuffled = [...tiles];
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
       }
       zz.append(...shuffled);
+      if (mobile) return; // no celular as obras ficam empilhadas (CSS); só a ordem muda
       const placed = [];
       const GAP = mobile ? 20 : 28;
       shuffled.forEach((el) => {
