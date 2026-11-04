@@ -1,12 +1,13 @@
 /* Sistema visual — Marina Woisky
-   Maitree itálica · branco #FBFBFA · tamanhos: 19 moldura / 14 títulos / 16 texto / 17 leitura / 13 rótulos */
+   Rosarivo (títulos, nome, menu — caixa alta) + Lato Light (texto), as fontes do portfólio · branco #FBFBFA · tamanhos: 19 moldura / 14 títulos / 16 texto / 17 leitura / 13 rótulos */
 :root {
   --bg: #fbfbfa;
   --ink: #0d0d0e;
   --ink-2: #45484b;     /* anos, locais, rótulos de seção */
   --ink-3: #6e7174;     /* rótulos de ficha, créditos */
   --rule: #9c9c99;      /* glifos, sublinhados pontilhados */
-  --font: 'Maitree', Georgia, 'Times New Roman', serif;
+  --font: 'Lato', 'Helvetica Neue', Arial, sans-serif;            /* texto, dados, legendas */
+  --serif: 'Rosarivo', Georgia, 'Times New Roman', serif;          /* nome, menu, títulos em caixa alta */
   --glyph: 'Noto Sans Symbols 2', 'Segoe UI Symbol', serif;
   --edge: 20px;                         /* margem dos cantos */
   --col: clamp(20px, 24.7vw, 316px);    /* início da coluna de conteúdo */
@@ -22,7 +23,6 @@ body {
   color: var(--ink);
   font-family: var(--font);
   font-weight: 300;
-  font-style: italic;
   font-size: 16px;
   line-height: 1.35;
   -webkit-font-smoothing: antialiased;
@@ -36,10 +36,10 @@ ul { padding: 0; list-style: none; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ------------------------------------------------------------ escala tipográfica */
-.caps { font-size: 14px; letter-spacing: .08em; text-transform: uppercase; }
-.frame { font-size: 19px; letter-spacing: .08em; text-transform: uppercase; }
+.caps { font-family: var(--serif); font-weight: 400; font-size: 14px; letter-spacing: .05em; text-transform: uppercase; }
+.frame { font-family: var(--serif); font-weight: 400; font-size: 19px; letter-spacing: .05em; text-transform: uppercase; }
 /* menu e cantos: mesmo tamanho dos títulos das obras, mais delicados que o nome */
-.lang.frame, .menu.frame, .corner-br.frame, .opener-caption { font-size: 14px; letter-spacing: .08em; text-transform: uppercase; }
+.lang.frame, .menu.frame, .corner-br.frame, .opener-caption { font-family: var(--serif); font-size: 14px; letter-spacing: .05em; text-transform: uppercase; }
 .muted { color: var(--ink-2); }
 .label { color: var(--ink-3); font-size: 13px; }
 .ln { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
