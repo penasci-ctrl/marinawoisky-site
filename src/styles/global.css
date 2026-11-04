@@ -90,7 +90,7 @@ ul { padding: 0; list-style: none; }
 
 /* ------------------------------------------------------------ Obras: abertura + ziguezague */
 .opener { position: fixed; inset: 0; z-index: 0; background: var(--bg); transform-origin: 50% 55%; }
-.opener.is-moving { will-change: transform, opacity, filter; }
+.opener.is-moving { will-change: transform, opacity; }
 .opener canvas { display: block; width: 100%; height: 100%; opacity: 0; transition: opacity 1.2s ease; }
 .opener-caption { position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 15; white-space: nowrap; transition: opacity .6s; }
 /* sem linha: o fundo da vitrine começa transparente e vira branco ao longo de 45vh */

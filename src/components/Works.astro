@@ -65,9 +65,11 @@ const tiles = works.filter((w) => w.images?.length);
     // ---- Abertura 3D: carrega o three.js só se houver modelo
     const canvas = document.querySelector('[data-opener]');
     if (canvas) {
-      import('../lib/opener.js').then(({ mountOpener }) =>
-        mountOpener(canvas, { web: canvas.dataset.web, mobile: canvas.dataset.mobile })
-      );
+      let ctl = null;
+      import('../lib/opener.js').then(({ mountOpener }) => {
+        ctl = mountOpener(canvas, { web: canvas.dataset.web, mobile: canvas.dataset.mobile });
+        lastKey = ''; onScroll();
+      });
       // Ao rolar: a cortina de obras sobe, a escultura some e a moldura aparece
       const opener = canvas.parentElement;
       const caption = document.querySelector('[data-opener-caption]');
@@ -94,7 +96,7 @@ const tiles = works.filter((w) => w.images?.length);
             opener.style.opacity = String(Math.max(0, 1 - Math.max(0, (p - 0.25) / 0.75) ** 1.4));
             if (!still) {
               opener.style.transform = p > 0 ? `scale(${1 + ease * 2.4}) rotate(${ease * -14}deg)` : '';
-              opener.style.filter = p > 0.02 ? `blur(${(ease * 12).toFixed(1)}px)` : '';
+              ctl?.setBlur(ease); // desfoque feito dentro do 3D (leve), não em CSS
             }
           }
           if (caption) caption.style.opacity = y > 40 ? '0' : '1';
