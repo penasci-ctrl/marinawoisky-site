@@ -39,7 +39,7 @@ ul { padding: 0; list-style: none; }
 .caps { font-family: var(--serif); font-weight: 400; font-size: 14px; letter-spacing: .05em; text-transform: uppercase; }
 .frame { font-family: var(--serif); font-weight: 400; font-size: 19px; letter-spacing: .05em; text-transform: uppercase; }
 /* menu e cantos: mesmo tamanho dos títulos das obras, mais delicados que o nome */
-.nav, .corner-br.frame, .opener-caption { font-family: var(--serif); font-size: 14px; letter-spacing: .05em; text-transform: uppercase; }
+.lang.frame, .menu.frame, .corner-br.frame, .opener-caption { font-family: var(--serif); font-size: 14px; letter-spacing: .05em; text-transform: uppercase; }
 .muted { color: var(--ink-2); }
 .label { color: var(--ink-3); font-size: 13px; }
 .ln { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
@@ -62,15 +62,14 @@ ul { padding: 0; list-style: none; }
   color: var(--ink);
 }
 .dif a, .dif button { color: var(--ink); }
-.site-name { position: fixed; z-index: 20; top: 18px; left: var(--edge); white-space: nowrap; }
-/* menu tradicional, sempre visível no topo à direita; a seção atual em tinta cheia, as outras mais claras */
-.nav { position: fixed; z-index: 20; top: 22px; right: var(--edge); display: flex; align-items: baseline; gap: 40px; }
-.nav ul { display: flex; gap: 22px; }
-.nav a, .lang a { transition: opacity .3s; }
-.nav ul a:not([aria-current]), .lang [aria-current='false'] { opacity: .5; }
-.nav ul a:hover, .lang a:hover { opacity: 1; }
-.lang { display: flex; gap: 6px; }
-.menu-btn, .menu-sheet { display: none; }
+.site-name { position: fixed; z-index: 20; top: 18px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+.lang { position: fixed; z-index: 20; top: 18px; right: var(--edge); display: flex; gap: 6px; }
+.lang [aria-current='false'] { opacity: .6; }
+.menu { position: fixed; z-index: 20; left: var(--edge); bottom: 28px; display: flex; flex-direction: column-reverse; }
+.menu ul { overflow: hidden; max-height: 0; margin-bottom: 4px; transition: max-height 1s var(--ease); }
+.menu:hover ul, .menu:has(:focus-visible) ul, .menu.is-open ul { max-height: 260px; }
+.menu-current { min-height: 36px; display: flex; align-items: center; }
+.menu-btn, .menu-sheet { display: none; }   /* só no celular */
 .corner-br { position: fixed; z-index: 20; right: var(--edge); bottom: 28px; display: flex; gap: 24px; align-items: baseline; }
 .chrome { transition: opacity .8s ease; }
 .is-intro .chrome { opacity: 0; pointer-events: none; }
@@ -162,6 +161,8 @@ ul { padding: 0; list-style: none; }
 @media (max-width: 800px) {
   :root { --col: 20px; }
   .frame { font-size: 16px; }
+  .site-name { top: 14px; }
+  .lang { top: 14px; }
   .page { padding-top: 84px; }
   .zz .tile { --tw: min(100%, calc(var(--r) * min(80vw, 56vh))); }
   .zz .tile:nth-child(odd), .zz .tile:nth-child(even) { margin-left: auto; margin-right: auto; }
@@ -188,18 +189,20 @@ ul { padding: 0; list-style: none; }
   body::before, body::after { content: ''; position: fixed; left: 0; right: 0; z-index: 19; background: var(--bg); pointer-events: none; transition: background-color .4s; }
   body::before { top: 0; height: calc(48px + env(safe-area-inset-top, 0px)); }
   body::after { bottom: 0; height: calc(60px + env(safe-area-inset-bottom, 0px)); }
-  body:not(:has(.corner-br))::after { display: none; }   /* sem cantos embaixo, sem barra */
+  body:not(:has(.corner-br))::after { display: none; }
   body.is-intro::before, body.is-intro::after { background: transparent; }
   .site-name { top: calc(14px + env(safe-area-inset-top, 0px)); font-size: 15px; }
-  .nav { display: none; }
+  .lang { top: calc(16px + env(safe-area-inset-top, 0px)); }
+  /* celular: nome à esquerda, botão Menu à direita; a lista abre em tela cheia */
+  .site-name { left: var(--edge); transform: none; }
+  .menu, .lang { display: none; }
   .menu-btn { display: block; position: fixed; z-index: 20; top: calc(10px + env(safe-area-inset-top, 0px)); right: var(--edge); font-size: 14px; min-height: 32px; }
-  /* lista em tela cheia, sem efeito negativo: fundo branco, tinta normal */
   .menu-sheet:not([hidden]) { display: flex; flex-direction: column; position: fixed; inset: 0; z-index: 40; background: var(--bg); color: var(--ink);
     padding: calc(76px + env(safe-area-inset-top, 0px)) var(--edge) calc(28px + env(safe-area-inset-bottom, 0px)); animation: sheet-in .35s ease both; }
   @keyframes sheet-in { from { opacity: 0; } }
   .menu-close { position: absolute; top: calc(10px + env(safe-area-inset-top, 0px)); right: var(--edge); font-size: 14px; min-height: 32px; }
   .menu-sheet ul { display: flex; flex-direction: column; gap: 6px; }
-  .menu-sheet ul a { font-family: var(--serif); font-size: 26px; letter-spacing: .04em; text-transform: uppercase; line-height: 1.3; }
+  .menu-sheet ul a { font-size: 26px; letter-spacing: .04em; text-transform: uppercase; line-height: 1.3; }
   .menu-sheet ul a:not([aria-current]) { opacity: .45; }
   .menu-lang { margin-top: auto; font-size: 14px; display: flex; gap: 6px; }
   .menu-lang [aria-current='false'] { opacity: .45; }
@@ -229,9 +232,9 @@ ul { padding: 0; list-style: none; }
    O conteúdo sai rápido e entra devagar, subindo 6 px; nome, idioma e menu ficam parados. */
 @view-transition { navigation: auto; }
 .site-name { view-transition-name: site-name; }
-.nav { view-transition-name: site-nav; }
-.menu-btn { view-transition-name: site-menu; }
-::view-transition-group(site-name), ::view-transition-group(site-nav), ::view-transition-group(site-menu) { animation-duration: 0s; }
+.lang { view-transition-name: site-lang; }
+.menu { view-transition-name: site-menu; }
+::view-transition-group(site-name), ::view-transition-group(site-lang), ::view-transition-group(site-menu) { animation-duration: 0s; }
 ::view-transition-old(root) { animation: vt-out .28s cubic-bezier(.4, 0, 1, 1) both; }
 ::view-transition-new(root) { animation: vt-in .62s cubic-bezier(.2, .6, .2, 1) .08s both; }
 @keyframes vt-out { to { opacity: 0; } }
