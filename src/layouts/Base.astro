@@ -28,8 +28,6 @@ const SECTIONS = [
   ['texts', '/textos'],
   ['about', '/sobre'],
 ];
-const current = SECTIONS.find(([k]) => k === section);
-const others = SECTIONS.filter(([k]) => k !== section);
 ---
 <!doctype html>
 <html lang={lang === 'en' ? 'en' : 'pt-BR'}>
@@ -62,20 +60,29 @@ const others = SECTIONS.filter(([k]) => k !== section);
 <body class={intro ? 'is-intro' : ''}>
   <a class="site-name frame dif" href={href(lang, '/')} data-to-top={section === 'works' ? '' : undefined}>Marina Woisky</a>
 
-  <div class="lang frame dif chrome">
-    <a href={href('pt', path)} lang="pt-BR" aria-current={lang === 'pt' ? 'true' : 'false'}>PT</a>
-    <span aria-hidden="true">/</span>
-    <a href={href('en', path)} lang="en" aria-current={lang === 'en' ? 'true' : 'false'}>EN</a>
-  </div>
-
-  <nav class="menu frame dif chrome" aria-label={ui.menu}>
-    {current && (
-      <a class="menu-current" href={href(lang, current[1])} aria-expanded="false" data-menu-toggle>{ui[current[0]]}</a>
-    )}
+  <!-- Menu tradicional: no computador, seções sempre visíveis no topo à direita; no celular, botão "Menu" abre a lista -->
+  <nav class="nav dif chrome" aria-label={ui.menu}>
     <ul>
-      {others.map(([k, p]) => <li><a href={href(lang, p)}>{ui[k]}</a></li>)}
+      {SECTIONS.map(([k, p]) => <li><a href={href(lang, p)} aria-current={k === section ? 'page' : undefined}>{ui[k]}</a></li>)}
     </ul>
+    <div class="lang">
+      <a href={href('pt', path)} lang="pt-BR" aria-current={lang === 'pt' ? 'true' : 'false'}>PT</a>
+      <span aria-hidden="true">/</span>
+      <a href={href('en', path)} lang="en" aria-current={lang === 'en' ? 'true' : 'false'}>EN</a>
+    </div>
   </nav>
+  <button class="menu-btn frame dif chrome" type="button" aria-expanded="false" aria-controls="menu-sheet" data-menu-open>{ui.menu}</button>
+  <div class="menu-sheet" id="menu-sheet" hidden data-menu-sheet>
+    <button class="menu-close frame" type="button" data-menu-close>{ui.close}</button>
+    <ul>
+      {SECTIONS.map(([k, p]) => <li><a href={href(lang, p)} aria-current={k === section ? 'page' : undefined}>{ui[k]}</a></li>)}
+    </ul>
+    <div class="menu-lang frame">
+      <a href={href('pt', path)} lang="pt-BR" aria-current={lang === 'pt' ? 'true' : 'false'}>PT</a>
+      <span aria-hidden="true">/</span>
+      <a href={href('en', path)} lang="en" aria-current={lang === 'en' ? 'true' : 'false'}>EN</a>
+    </div>
+  </div>
 
   <main>
     <slot />
@@ -89,24 +96,18 @@ const others = SECTIONS.filter(([k]) => k !== section);
       if (img.complete && img.naturalWidth) requestAnimationFrame(show);
       else { img.addEventListener('load', show, { once: true }); img.addEventListener('error', show, { once: true }); }
     });
-    // Menu: no computador abre com o mouse (CSS); no toque, abre e fecha com um toque
-    const menu = document.querySelector('.menu');
-    const btn = document.querySelector('[data-menu-toggle]');
-    if (menu && btn) {
-      btn.addEventListener('click', (e) => {
-        // no computador, o item atual é um link para o começo da seção (ex.: Obras, vindo de uma obra)
-        if (matchMedia('(hover: hover)').matches) {
-          if (location.pathname === btn.getAttribute('href')) { e.preventDefault(); scrollTo({ top: 0, behavior: 'smooth' }); }
-          return;
-        }
-        e.preventDefault();
-        const open = menu.classList.toggle('is-open');
-        btn.setAttribute('aria-expanded', String(open));
-      });
-      document.addEventListener('click', (e) => {
-        if (!menu.contains(e.target)) { menu.classList.remove('is-open'); btn.setAttribute('aria-expanded', 'false'); }
-      });
-    }
+    // Menu do celular: abre/fecha a lista em tela cheia
+    const sheet = document.querySelector('[data-menu-sheet]');
+    const openBtn = document.querySelector('[data-menu-open]');
+    const setMenu = (open) => {
+      sheet.hidden = !open;
+      openBtn.setAttribute('aria-expanded', String(open));
+      document.documentElement.classList.toggle('menu-open', open);
+      if (open) sheet.querySelector('[aria-current="page"], a')?.focus();
+    };
+    openBtn?.addEventListener('click', () => setMenu(true));
+    document.querySelector('[data-menu-close]')?.addEventListener('click', () => { setMenu(false); openBtn.focus(); });
+    addEventListener('keydown', (e) => { if (e.key === 'Escape' && !sheet.hidden) setMenu(false); });
     // Na home, o nome volta suave para a abertura
     document.querySelector('[data-to-top]')?.addEventListener('click', (e) => {
       if (location.pathname === e.currentTarget.getAttribute('href')) { e.preventDefault(); scrollTo({ top: 0, behavior: 'smooth' }); }

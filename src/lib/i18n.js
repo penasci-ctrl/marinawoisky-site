@@ -38,7 +38,7 @@ export const UI = {
     technique: 'Técnica', dimensions: 'Dimensões', exhibition: 'Exposição', photo: 'Foto', photos: 'Fotos',
     venue: 'Local', city: 'Cidade', dates: 'Datas', text: 'Texto', more: 'Mais', visit: 'Acesse aqui', worksShown: 'Obras',
     contact: 'Contato', gallery: 'Galeria', galleries: 'Galerias', cvPdf: 'CV em PDF', instagram: 'Instagram',
-    view: 'vista', prev: 'Imagem anterior', nextImg: 'Próxima imagem', menu: 'Menu',
+    view: 'vista', prev: 'Imagem anterior', nextImg: 'Próxima imagem', menu: 'Menu', close: 'Fechar',
     notFound: 'Página não encontrada.', backHome: 'Voltar para Obras',
   },
   en: {
@@ -49,7 +49,7 @@ export const UI = {
     technique: 'Technique', dimensions: 'Dimensions', exhibition: 'Exhibition', photo: 'Photo', photos: 'Photos',
     venue: 'Venue', city: 'City', dates: 'Dates', text: 'Text', more: 'More', visit: 'Visit', worksShown: 'Works',
     contact: 'Contact', gallery: 'Gallery', galleries: 'Galleries', cvPdf: 'CV (PDF)', instagram: 'Instagram',
-    view: 'view', prev: 'Previous image', nextImg: 'Next image', menu: 'Menu',
+    view: 'view', prev: 'Previous image', nextImg: 'Next image', menu: 'Menu', close: 'Close',
     notFound: 'Page not found.', backHome: 'Back to Works',
   },
 };
