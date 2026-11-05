@@ -49,6 +49,9 @@ ul { padding: 0; list-style: none; }
 .reading blockquote { margin: 14px 0 14px 28px; }
 .end-glyph { font-family: var(--glyph); font-style: normal; font-size: 12px; color: var(--rule); padding: 40px 0 0; }
 
+/* tinta no tecido: só nome, menu, cantos e títulos (o texto corrido fica limpo) */
+.caps, .frame, .menu-sheet ul a { filter: url(#ink); }
+
 /* ------------------------------------------------------------ moldura fixa (modo diferença) */
 /* Negativo: o texto é desenhado com mix-blend difference. A cor "clara" de cada token é o fundo menos a tinta
    desejada, então sobre o branco o resultado é exatamente --ink / --ink-2 / --ink-3; sobre imagens, inverte. */
