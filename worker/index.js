@@ -18,6 +18,11 @@ const json = (data, origin, status = 200) =>
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    // endereço principal é www.marinawoisky.com: sem "www" redireciona (mantendo caminho e idioma)
+    if (url.hostname === 'marinawoisky.com') {
+      url.hostname = 'www.marinawoisky.com';
+      return Response.redirect(url.toString(), 301);
+    }
     if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(request);
 
     const origin = request.headers.get('Origin') || '';
