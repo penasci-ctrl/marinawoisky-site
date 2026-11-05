@@ -9,7 +9,7 @@ export const about = defineType({
     defineField({
       name: 'cv',
       title: 'CV',
-      description: 'Cada seção (Formação, Individuais, Coletivas…) com suas linhas. O ano aparece só na primeira linha de cada ano.',
+      description: 'Cada seção (Formação, Individuais, Coletivas…) com suas linhas. Preencha o ano em todas as linhas, em qualquer ordem: o site ordena do mais recente para o mais antigo e mostra cada ano uma vez só.',
       type: 'array',
       of: [
         {
@@ -27,7 +27,7 @@ export const about = defineType({
                   type: 'object',
                   name: 'cvEntry',
                   fields: [
-                    defineField({ name: 'year', title: 'Ano', type: 'string' }),
+                    defineField({ name: 'year', title: 'Ano', description: 'Ex.: 2024 ou 2016–21', type: 'string', validation: (r) => r.required() }),
                     defineField({ name: 'text', title: 'Texto', type: 'localeString', validation: (r) => r.required() }),
                   ],
                   preview: { select: { title: 'text.pt', subtitle: 'year' } },

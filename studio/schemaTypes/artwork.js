@@ -16,6 +16,13 @@ export const artwork = defineType({
     }),
     defineField({ name: 'year', title: 'Ano', type: 'number', validation: (r) => r.required().integer().min(2010).max(2100) }),
     defineField({
+      name: 'order',
+      title: 'Posição dentro do ano',
+      description: '1 = primeira obra desse ano na vitrine, 2 = segunda… Vazio vai para o fim do ano.',
+      type: 'number',
+      validation: (r) => r.integer().min(1),
+    }),
+    defineField({
       name: 'images',
       title: 'Fotos',
       description: 'A primeira é a capa. A segunda aparece quando o mouse passa sobre a obra no índice.',
@@ -35,12 +42,6 @@ export const artwork = defineType({
       of: [{ type: 'reference', to: [{ type: 'exhibition' }] }],
     }),
     defineField({
-      name: 'order',
-      title: 'Ordem dentro do ano',
-      description: 'Menor aparece primeiro. Pode deixar vazio.',
-      type: 'number',
-    }),
-    defineField({
       name: 'model3d',
       title: 'Modelo 3D (.glb, opcional)',
       description: 'Scan da escultura. Use um arquivo otimizado de até ~3 MB.',
@@ -51,7 +52,7 @@ export const artwork = defineType({
   ],
   orderings: [{ title: 'Ano (mais recente)', name: 'yearDesc', by: [{ field: 'year', direction: 'desc' }, { field: 'order', direction: 'asc' }] }],
   preview: {
-    select: { title: 'title.pt', year: 'year', media: 'images.0' },
-    prepare: ({ title, year, media }) => ({ title, subtitle: year ? String(year) : '', media }),
+    select: { title: 'title.pt', year: 'year', order: 'order', media: 'images.0' },
+    prepare: ({ title, year, order, media }) => ({ title, subtitle: [year, order ? `${order}º` : null].filter(Boolean).join(' · '), media }),
   },
 })

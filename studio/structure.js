@@ -3,7 +3,14 @@ export const structure = (S) =>
   S.list()
     .title('Site')
     .items([
-      S.documentTypeListItem('artwork').title('Obras'),
+      S.listItem()
+        .title('Obras')
+        .schemaType('artwork')
+        .child(
+          S.documentTypeList('artwork')
+            .title('Obras (como na vitrine)')
+            .defaultOrdering([{ field: 'year', direction: 'desc' }, { field: 'order', direction: 'asc' }])
+        ),
       S.documentTypeListItem('exhibition').title('Exposições'),
       S.documentTypeListItem('publication').title('Publicações'),
       S.divider(),

@@ -12,6 +12,15 @@ const { about, settings } = await getContent();
 const bio = tBlocks(about?.bio, lang);
 const galleries = settings?.galleries || [];
 const instagram = settings?.instagram;
+// CV: cada seção do mais recente para o mais antigo; linha sem ano herda o ano da de cima;
+// o ano aparece só na primeira linha de cada ano
+const yearNum = (y) => Number(String(y || '').match(/\d{4}/)?.[0] || 0);
+const cv = (about?.cv || []).map((sec) => {
+  let last = '';
+  const filled = (sec.entries || []).map((e, i) => ({ ...e, year: (last = e.year || last), i }));
+  filled.sort((a, b) => yearNum(b.year) - yearNum(a.year) || a.i - b.i);
+  return { ...sec, entries: filled.map((e, k) => ({ ...e, show: k === 0 || e.year !== filled[k - 1].year })) };
+});
 const hasContact = !!(settings?.email || instagram || about?.cvPdf);
 ---
 <Base lang={lang} section="about" path="/sobre" title={ui.about} image={about?.portrait}>
@@ -38,12 +47,12 @@ const hasContact = !!(settings?.email || instagram || about?.cvPdf);
         </div>
       )}
 
-      {(about?.cv || []).map((sec) => (
+      {cv.map((sec) => (
         <>
           <span class="lab caps">{t(sec.title, lang)}</span>
           <div class="cv-list">
             {(sec.entries || []).map((e) => (
-              <div class="cv-row"><span class="muted">{e.year}</span><span>{t(e.text, lang)}</span></div>
+              <div class="cv-row"><span class="muted">{e.show ? e.year : ''}</span><span>{t(e.text, lang)}</span></div>
             ))}
           </div>
         </>
