@@ -11,3 +11,9 @@
 /imprensa          /publicacoes     301
 /contato           /sobre           301
 /contact           /en/sobre        301
+
+# página Textos removida (nov/2026)
+/textos            /publicacoes     301
+/textos/           /publicacoes/    301
+/en/textos         /en/publicacoes  301
+/en/textos/        /en/publicacoes/ 301

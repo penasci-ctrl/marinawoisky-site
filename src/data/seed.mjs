@@ -147,8 +147,8 @@ export const docs = [
     galleries: [{ _type: 'gallery', _key: key(), name: 'Almeida & Dale', city: L('São Paulo') }],
     _seedOpening: { web: 'escultura-web.glb', mobile: 'escultura-mobile.glb' },
     description: L(
-      'Marina Woisky (São Paulo, 1996) é artista visual. Obras, exposições, publicações e textos.',
-      'Marina Woisky (São Paulo, 1996) is a visual artist. Works, exhibitions, publications and texts.'
+      'Marina Woisky (São Paulo, 1996) é artista visual. Obras, exposições e publicações.',
+      'Marina Woisky (São Paulo, 1996) is a visual artist. Works, exhibitions and publications.'
     ),
   },
 ];

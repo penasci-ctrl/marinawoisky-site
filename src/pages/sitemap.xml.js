@@ -4,7 +4,7 @@ import { href } from '../lib/i18n.js';
 
 export async function GET({ site }) {
   const { works, exhibitions } = await getContent();
-  const paths = ['/', '/obras', '/exposicoes', '/publicacoes', '/textos', '/sobre',
+  const paths = ['/', '/obras', '/exposicoes', '/publicacoes', '/sobre',
     ...works.map((w) => `/obras/${w.slug}`),
     ...exhibitions.filter((e) => !e.showInCvOnly).map((e) => `/exposicoes/${e.slug}`)];
   const urls = paths.flatMap((p) => ['pt', 'en'].map((l) => new URL(href(l, p), site).href));
