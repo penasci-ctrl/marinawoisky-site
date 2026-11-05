@@ -61,11 +61,10 @@ const others = SECTIONS.filter(([k]) => k !== section);
 <body class={intro ? 'is-intro' : ''}>
   <!-- Tratamento "tinta no tecido": a borda das letras roída pela trama (nome, menu, títulos) -->
   <svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
-    <filter id="ink" x="-5%" y="-30%" width="110%" height="160%" color-interpolation-filters="sRGB">
-      <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="2" seed="7" result="n" />
-      <feDisplacementMap in="SourceGraphic" in2="n" scale="0.7" xChannelSelector="R" yChannelSelector="G" result="d" />
-      <feGaussianBlur in="d" stdDeviation="0.18" result="b" />
-      <feComponentTransfer in="b"><feFuncA type="table" tableValues="0 0.15 0.85 1 1" /></feComponentTransfer>
+    <filter id="ink" x="-2%" y="-10%" width="104%" height="120%" color-interpolation-filters="sRGB">
+      <!-- só um leve desalinhamento da borda, sem desfoque: nítido de longe, irregular de perto -->
+      <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="1" seed="7" result="n" />
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="0.45" xChannelSelector="R" yChannelSelector="G" />
     </filter>
   </svg>
 
