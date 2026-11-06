@@ -15,6 +15,13 @@ export const exhibition = defineType({
       validation: (r) => r.required(),
     }),
     defineField({ name: 'year', title: 'Ano', type: 'number', validation: (r) => r.required().integer() }),
+    defineField({
+      name: 'order',
+      title: 'Posição dentro do ano',
+      description: '1 = primeira exposição desse ano na lista, 2 = segunda… Vazio segue a data de abertura e vai para o fim do ano.',
+      type: 'number',
+      validation: (r) => r.integer().min(1),
+    }),
     defineField({ name: 'venue', title: 'Local', description: 'Ex.: Millan', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'city', title: 'Cidade, país', type: 'localeString' }),
     defineField({ name: 'note', title: 'Observação', description: 'Ex.: com Julia Gallo; curado por Yudi Rafael', type: 'localeString' }),
@@ -34,9 +41,9 @@ export const exhibition = defineType({
     defineField({ name: 'link', title: 'Link externo (galeria, instituição)', type: 'url' }),
     defineField({ name: 'showInCvOnly', title: 'Só no CV (sem página própria)', type: 'boolean', initialValue: false }),
   ],
-  orderings: [{ title: 'Ano (mais recente)', name: 'yearDesc', by: [{ field: 'year', direction: 'desc' }] }],
+  orderings: [{ title: 'Ano (mais recente)', name: 'yearDesc', by: [{ field: 'year', direction: 'desc' }, { field: 'order', direction: 'asc' }, { field: 'startDate', direction: 'desc' }] }],
   preview: {
-    select: { title: 'title.pt', year: 'year', venue: 'venue', media: 'images.0' },
-    prepare: ({ title, year, venue, media }) => ({ title, subtitle: [year, venue].filter(Boolean).join(' · '), media }),
+    select: { title: 'title.pt', year: 'year', order: 'order', venue: 'venue', media: 'images.0' },
+    prepare: ({ title, year, order, venue, media }) => ({ title, subtitle: [year, order ? `${order}º` : null, venue].filter(Boolean).join(' · '), media }),
   },
 })

@@ -11,7 +11,14 @@ export const structure = (S) =>
             .title('Obras (como na vitrine)')
             .defaultOrdering([{ field: 'year', direction: 'desc' }, { field: 'order', direction: 'asc' }])
         ),
-      S.documentTypeListItem('exhibition').title('Exposições'),
+      S.listItem()
+        .title('Exposições')
+        .schemaType('exhibition')
+        .child(
+          S.documentTypeList('exhibition')
+            .title('Exposições (como no site)')
+            .defaultOrdering([{ field: 'year', direction: 'desc' }, { field: 'order', direction: 'asc' }, { field: 'startDate', direction: 'desc' }])
+        ),
       S.documentTypeListItem('publication').title('Publicações'),
       S.divider(),
       S.listItem().title('Sobre').id('about').child(S.document().schemaType('about').documentId('about')),

@@ -16,7 +16,7 @@ const QUERY = `{
     "images": images[] ${IMG},
     "exhibitions": exhibitions[]-> ${EXH_REF}
   },
-  "exhibitions": *[_type == "exhibition"] | order(year desc, startDate desc, _createdAt desc) {
+  "exhibitions": *[_type == "exhibition"] | order(year desc, coalesce(order, 999) asc, startDate desc, _createdAt desc) {
     "id": _id, "slug": slug.current, title, kind, year, venue, city, note, startDate, endDate,
     photoCredit, text, textAuthor, link, showInCvOnly,
     "images": images[] ${IMG},

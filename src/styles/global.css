@@ -135,7 +135,7 @@ ul { padding: 0; list-style: none; }
 .work-counter { color: var(--ink-2); }
 
 /* ------------------------------------------------------------ Exposição */
-.show-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 760px; }
+.show-photos { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1026px; }   /* +35% */
 .show-photos figure:first-child, .show-photos figure.wide { grid-column: 1 / -1; }
 .show-photos img { width: 100%; height: auto; }
 .show-body { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 24px; max-width: 760px; margin-top: 56px; }
@@ -144,7 +144,7 @@ ul { padding: 0; list-style: none; }
 /* ------------------------------------------------------------ listas */
 .exh-list { max-width: 560px; }
 .exh-row { grid-template-columns: 72px minmax(0, 1fr); }
-.exh-preview { position: fixed; left: min(920px, 72vw); top: 152px; width: 340px; pointer-events: none; opacity: 0; transition: opacity .5s ease; }
+.exh-preview { position: fixed; left: min(880px, calc(100vw - 459px - var(--edge))); top: 152px; width: 459px;   /* +35% */ pointer-events: none; opacity: 0; transition: opacity .5s ease; }
 .exh-preview.is-on { opacity: 1; }
 .exh-preview img { width: 100%; aspect-ratio: 340 / 234; object-fit: cover; }
 .pub-row { grid-template-columns: minmax(0, 5fr) 56px minmax(0, 3fr) 96px; }
