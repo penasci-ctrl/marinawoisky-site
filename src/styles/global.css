@@ -149,7 +149,8 @@ ul { padding: 0; list-style: none; }
 .exh-preview img { width: 100%; aspect-ratio: 340 / 234; object-fit: cover; }
 .pub-row { grid-template-columns: minmax(0, 5fr) 56px minmax(0, 3fr) 96px; }
 .txt-row { grid-template-columns: minmax(0, 5fr) minmax(0, 2fr) 56px minmax(0, 2fr); }
-.pub-photos { display: flex; justify-content: flex-start; gap: 12px; padding: 10px 0 24px; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+.pub-photos { display: flex; justify-content: flex-start; gap: 12px; padding: 10px 0 24px; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.pub-photos::-webkit-scrollbar { display: none; }   /* rola sem mostrar a barra */
 .pub-photos img { flex: 0 0 auto; height: 358px; max-height: 358px; width: auto; max-width: none; }   /* altura fixa, sem corte; o que passar da largura rola para o lado */
 
 /* ------------------------------------------------------------ Sobre */
