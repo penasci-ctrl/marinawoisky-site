@@ -149,8 +149,8 @@ ul { padding: 0; list-style: none; }
 .exh-preview img { width: 100%; aspect-ratio: 340 / 234; object-fit: cover; }
 .pub-row { grid-template-columns: minmax(0, 5fr) 56px minmax(0, 3fr) 96px; }
 .txt-row { grid-template-columns: minmax(0, 5fr) minmax(0, 2fr) 56px minmax(0, 2fr); }
-.pub-photos { display: flex; justify-content: center; padding: 10px 0 24px; }
-.pub-photos img { max-height: 358px; width: auto; }
+.pub-photos { display: flex; justify-content: flex-start; gap: 12px; padding: 10px 0 24px; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+.pub-photos img { flex: 0 0 auto; height: 358px; max-height: 358px; width: auto; max-width: none; }   /* altura fixa, sem corte; o que passar da largura rola para o lado */
 
 /* ------------------------------------------------------------ Sobre */
 .about { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 40px 24px; align-items: start; }
@@ -177,6 +177,7 @@ ul { padding: 0; list-style: none; }
   .zz.is-random .tile { position: relative; left: auto; top: auto; width: var(--tw); margin: 40px auto 0 !important; }
   .zz.is-random .tile:first-child { margin-top: 0 !important; }
   .exh-preview { display: none; }
+  .pub-photos img { height: 260px; max-height: 260px; }
   .pub-row, .txt-row { grid-template-columns: 1fr auto; }
   .pub-row > :nth-child(3), .txt-row > :nth-child(2), .txt-row > :nth-child(4) { grid-column: 1 / -1; color: var(--ink-2); }
   .about, .show-body { grid-template-columns: 1fr; gap: 12px; }
